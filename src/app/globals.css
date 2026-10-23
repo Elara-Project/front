@@ -1,0 +1,320 @@
+@import "tailwindcss";
+
+/* ========================================
+   TEMA CLARO - ELARA
+======================================== */
+
+:root {
+  /* Identidade */
+  --elara-terracota: #d97d64;
+  --elara-terracota-hover: #c96f57;
+  --elara-azul: #7fa2b8;
+  --elara-verde: #8fbc8f;
+
+  /* Estrutura */
+  --elara-fundo: #f8f5f1;
+  --elara-superficie: #ffffff;
+  --elara-superficie-secundaria: #fbf9f6;
+  --elara-superficie-hover: #f8f5f1;
+
+  /* Textos */
+  --elara-texto: #2c3e44;
+  --elara-texto-secundario: #52656c;
+  --elara-texto-suave: #89979c;
+  --elara-texto-muito-suave: #a6b0b4;
+
+  /* Bordas */
+  --elara-borda: #eee8e2;
+  --elara-borda-forte: #e3dcd5;
+
+  /* Sidebar */
+  --elara-sidebar: #ffffff;
+  --elara-sidebar-card: #fbf9f6;
+
+  /* Estados */
+  --elara-terracota-suave: #f6e2dc;
+  --elara-terracota-texto: #b95f49;
+
+  --elara-azul-suave: #e7f0f4;
+  --elara-azul-texto: #5e8398;
+
+  --elara-verde-suave: #edf5ed;
+  --elara-verde-texto: #699969;
+
+  --elara-amarelo-suave: #fff3d9;
+  --elara-amarelo-texto: #a67b27;
+
+  /* Formulários */
+  --elara-input: #ffffff;
+  --elara-placeholder: #9aa5a9;
+
+  /* Overlay */
+  --elara-overlay: rgba(44, 62, 68, 0.25);
+}
+
+/* ========================================
+   CONFIGURAÇÕES GERAIS
+======================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--elara-fundo);
+  color: var(--elara-texto);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ========================================
+   MODO ESCURO
+======================================== */
+
+html.tema-escuro {
+  color-scheme: dark;
+
+  --elara-terracota: #ed8b71;
+  --elara-terracota-hover: #f29a82;
+
+  --elara-azul: #8fb7ca;
+  --elara-verde: #9bc99b;
+
+  --elara-fundo: #182226;
+  --elara-superficie: #243238;
+  --elara-superficie-secundaria: #29383e;
+  --elara-superficie-hover: #304047;
+
+  --elara-texto: #f4f7f8;
+  --elara-texto-secundario: #d0dade;
+  --elara-texto-suave: #aebdc2;
+  --elara-texto-muito-suave: #91a3aa;
+
+  --elara-borda: #405158;
+  --elara-borda-forte: #52646b;
+
+  --elara-sidebar: #202d33;
+  --elara-sidebar-card: #29383e;
+
+  --elara-terracota-suave: #50372f;
+  --elara-terracota-texto: #ffb19d;
+
+  --elara-azul-suave: #29434e;
+  --elara-azul-texto: #b8ddea;
+
+  --elara-verde-suave: #2d4534;
+  --elara-verde-texto: #b1dcb2;
+
+  --elara-amarelo-suave: #4b4027;
+  --elara-amarelo-texto: #f0ce7a;
+
+  --elara-input: #1e292e;
+  --elara-placeholder: #9babb1;
+
+  --elara-overlay: rgba(0, 0, 0, 0.55);
+}
+
+html.tema-escuro body {
+  background-color: var(--elara-fundo);
+  color: var(--elara-texto);
+}
+
+/* ========================================
+   FORMULÁRIOS
+======================================== */
+
+html.tema-escuro input,
+html.tema-escuro textarea,
+html.tema-escuro select {
+  background-color: var(--elara-input);
+  color: var(--elara-texto);
+  border-color: var(--elara-borda);
+}
+
+html.tema-escuro input::placeholder,
+html.tema-escuro textarea::placeholder {
+  color: var(--elara-placeholder);
+}
+
+/* ========================================
+   ALTO CONTRASTE
+======================================== */
+
+html.alto-contraste {
+  color-scheme: dark;
+
+  --elara-terracota: #ffcc00;
+  --elara-terracota-hover: #ffe066;
+
+  --elara-azul: #00e5ff;
+  --elara-verde: #7cff00;
+
+  --elara-fundo: #000000;
+  --elara-superficie: #000000;
+  --elara-superficie-secundaria: #000000;
+  --elara-superficie-hover: #151515;
+
+  --elara-texto: #ffffff;
+  --elara-texto-secundario: #ffffff;
+  --elara-texto-suave: #ffffff;
+  --elara-texto-muito-suave: #ffffff;
+
+  --elara-borda: #ffffff;
+  --elara-borda-forte: #ffffff;
+
+  --elara-sidebar: #000000;
+  --elara-sidebar-card: #000000;
+
+  --elara-terracota-suave: #000000;
+  --elara-terracota-texto: #ffcc00;
+
+  --elara-azul-suave: #000000;
+  --elara-azul-texto: #00e5ff;
+
+  --elara-verde-suave: #000000;
+  --elara-verde-texto: #7cff00;
+
+  --elara-amarelo-suave: #000000;
+  --elara-amarelo-texto: #ffcc00;
+
+  --elara-input: #000000;
+  --elara-placeholder: #ffffff;
+
+  --elara-overlay: rgba(255, 255, 255, 0.15);
+}
+
+html.alto-contraste body {
+  background: #000000;
+  color: #ffffff;
+}
+
+html.alto-contraste input,
+html.alto-contraste textarea,
+html.alto-contraste select {
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+html.alto-contraste input::placeholder,
+html.alto-contraste textarea::placeholder {
+  color: #ffffff;
+  opacity: 0.8;
+}
+
+/* ========================================
+   TAMANHO DA FONTE
+======================================== */
+
+html.fonte-pequena {
+  font-size: 90%;
+}
+
+html.fonte-normal {
+  font-size: 100%;
+}
+
+html.fonte-grande {
+  font-size: 118%;
+}
+
+/* ========================================
+   REDUZIR ANIMAÇÕES
+======================================== */
+
+html.reduzir-animacoes {
+  scroll-behavior: auto;
+}
+
+html.reduzir-animacoes *,
+html.reduzir-animacoes *::before,
+html.reduzir-animacoes *::after {
+  animation-duration: 0.01ms !important;
+  animation-delay: 0ms !important;
+  animation-iteration-count: 1 !important;
+
+  transition-duration: 0.01ms !important;
+  transition-delay: 0ms !important;
+
+  scroll-behavior: auto !important;
+}
+
+/* Respeita também a configuração do dispositivo */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ========================================
+   FOCO DO TECLADO
+======================================== */
+
+*:focus-visible {
+  outline: 3px solid var(--elara-azul);
+  outline-offset: 3px;
+}
+
+/* ========================================
+   SELEÇÃO DE TEXTO
+======================================== */
+
+::selection {
+  background-color: var(--elara-terracota);
+  color: #ffffff;
+}
+
+/* ========================================
+   SCROLLBAR
+======================================== */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color:
+    var(--elara-texto-muito-suave)
+    var(--elara-superficie);
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--elara-superficie);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--elara-texto-muito-suave);
+  border-radius: 999px;
+}
