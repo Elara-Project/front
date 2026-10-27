@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   usePathname,
   useRouter,
@@ -140,19 +141,14 @@ export default function Sidebar() {
           className="block"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-[16px] bg-[var(--elara-terracota)] text-lg font-black text-white shadow-sm">
-              E
-            </div>
-
-            <div>
-              <p className="text-[22px] font-extrabold tracking-[0.08em] text-[var(--elara-terracota)]">
-                ELARA
-              </p>
-
-              <p className="mt-[-2px] text-[10px] font-semibold text-[var(--elara-texto-suave)]">
-                Cuidando de quem cuida.
-              </p>
-            </div>
+            <Image
+              src="/logo-elara.png"
+              alt="ELARA — Cuidando de quem cuida"
+              width={190}
+              height={150}
+              priority
+              className="h-auto w-[150px] max-w-full object-contain"
+            />
           </div>
         </Link>
       </div>
@@ -369,13 +365,14 @@ export default function Sidebar() {
           href="/dashboard"
           className="flex items-center gap-2.5"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-[12px] bg-[var(--elara-terracota)] text-sm font-black text-white">
-            E
-          </div>
-
-          <span className="font-extrabold tracking-[0.08em] text-[var(--elara-terracota)]">
-            ELARA
-          </span>
+          <Image
+            src="/logo-elara.png"
+            alt="ELARA — Cuidando de quem cuida"
+            width={110}
+            height={85}
+            priority
+            className="h-auto w-[88px] object-contain"
+          />
         </Link>
 
         <div className="flex items-center gap-2">
