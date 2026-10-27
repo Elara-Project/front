@@ -1,3 +1,4 @@
+
 @import "tailwindcss";
 
 /* ========================================
@@ -5,6 +6,8 @@
 ======================================== */
 
 :root {
+  color-scheme: light;
+
   /* Identidade */
   --elara-terracota: #d97d64;
   --elara-terracota-hover: #c96f57;
@@ -134,13 +137,8 @@ html.tema-escuro {
   --elara-overlay: rgba(0, 0, 0, 0.55);
 }
 
-html.tema-escuro body {
-  background-color: var(--elara-fundo);
-  color: var(--elara-texto);
-}
-
 /* ========================================
-   FORMULÁRIOS
+   FORMULÁRIOS NO MODO ESCURO
 ======================================== */
 
 html.tema-escuro input,
@@ -157,69 +155,154 @@ html.tema-escuro textarea::placeholder {
 }
 
 /* ========================================
-   ALTO CONTRASTE
+   ALTO CONTRASTE - TEMA CLARO
+
+   Não ativa o modo escuro.
 ======================================== */
 
-html.alto-contraste {
+html.alto-contraste:not(.tema-escuro) {
+  color-scheme: light;
+
+  /* Identidade com cores mais legíveis */
+  --elara-terracota: #a43d25;
+  --elara-terracota-hover: #812b19;
+
+  --elara-azul: #215b7d;
+  --elara-verde: #286b38;
+
+  /* Fundos continuam claros */
+  --elara-fundo: #ffffff;
+  --elara-superficie: #ffffff;
+  --elara-superficie-secundaria: #f5f5f5;
+  --elara-superficie-hover: #ededed;
+
+  /* Textos mais escuros */
+  --elara-texto: #111111;
+  --elara-texto-secundario: #222222;
+  --elara-texto-suave: #333333;
+  --elara-texto-muito-suave: #444444;
+
+  /* Bordas reforçadas */
+  --elara-borda: #555555;
+  --elara-borda-forte: #222222;
+
+  /* Sidebar claro */
+  --elara-sidebar: #ffffff;
+  --elara-sidebar-card: #f5f5f5;
+
+  /* Estados */
+  --elara-terracota-suave: #fff0e9;
+  --elara-terracota-texto: #872b18;
+
+  --elara-azul-suave: #e7f2fa;
+  --elara-azul-texto: #174c6d;
+
+  --elara-verde-suave: #e5f4e7;
+  --elara-verde-texto: #205b2d;
+
+  --elara-amarelo-suave: #fff2c7;
+  --elara-amarelo-texto: #765000;
+
+  /* Formulários */
+  --elara-input: #ffffff;
+  --elara-placeholder: #444444;
+
+  --elara-overlay: rgba(0, 0, 0, 0.45);
+}
+
+/* ========================================
+   ALTO CONTRASTE - TEMA ESCURO
+
+   Mantém o tema escuro.
+======================================== */
+
+html.tema-escuro.alto-contraste {
   color-scheme: dark;
 
-  --elara-terracota: #ffcc00;
-  --elara-terracota-hover: #ffe066;
+  /* Identidade */
+  --elara-terracota: #ffb39e;
+  --elara-terracota-hover: #ffd0c2;
 
-  --elara-azul: #00e5ff;
-  --elara-verde: #7cff00;
+  --elara-azul: #9cdbff;
+  --elara-verde: #b5f0b5;
 
-  --elara-fundo: #000000;
-  --elara-superficie: #000000;
-  --elara-superficie-secundaria: #000000;
-  --elara-superficie-hover: #151515;
+  /* Fundos escuros */
+  --elara-fundo: #080b0d;
+  --elara-superficie: #111719;
+  --elara-superficie-secundaria: #182024;
+  --elara-superficie-hover: #263238;
 
+  /* Textos claros */
   --elara-texto: #ffffff;
-  --elara-texto-secundario: #ffffff;
-  --elara-texto-suave: #ffffff;
-  --elara-texto-muito-suave: #ffffff;
+  --elara-texto-secundario: #f1f5f6;
+  --elara-texto-suave: #e0e9ec;
+  --elara-texto-muito-suave: #d0dde1;
 
-  --elara-borda: #ffffff;
+  /* Bordas reforçadas */
+  --elara-borda: #b8c9d0;
   --elara-borda-forte: #ffffff;
 
-  --elara-sidebar: #000000;
-  --elara-sidebar-card: #000000;
+  /* Sidebar escuro */
+  --elara-sidebar: #0d1417;
+  --elara-sidebar-card: #192327;
 
-  --elara-terracota-suave: #000000;
-  --elara-terracota-texto: #ffcc00;
+  /* Estados */
+  --elara-terracota-suave: #45291f;
+  --elara-terracota-texto: #ffd0c2;
 
-  --elara-azul-suave: #000000;
-  --elara-azul-texto: #00e5ff;
+  --elara-azul-suave: #173849;
+  --elara-azul-texto: #b9e6ff;
 
-  --elara-verde-suave: #000000;
-  --elara-verde-texto: #7cff00;
+  --elara-verde-suave: #203d2a;
+  --elara-verde-texto: #c6f5c6;
 
-  --elara-amarelo-suave: #000000;
-  --elara-amarelo-texto: #ffcc00;
+  --elara-amarelo-suave: #453914;
+  --elara-amarelo-texto: #ffe18a;
 
-  --elara-input: #000000;
-  --elara-placeholder: #ffffff;
+  /* Formulários */
+  --elara-input: #111719;
+  --elara-placeholder: #d0dde1;
 
-  --elara-overlay: rgba(255, 255, 255, 0.15);
+  --elara-overlay: rgba(0, 0, 0, 0.75);
 }
+
+/* ========================================
+   REGRAS COMUNS DO ALTO CONTRASTE
+======================================== */
 
 html.alto-contraste body {
-  background: #000000;
-  color: #ffffff;
+  background-color: var(--elara-fundo);
+  color: var(--elara-texto);
 }
 
+/* Reforça bordas dos formulários */
 html.alto-contraste input,
 html.alto-contraste textarea,
 html.alto-contraste select {
-  background: #000000;
-  color: #ffffff;
-  border: 2px solid #ffffff;
+  background-color: var(--elara-input);
+  color: var(--elara-texto);
+  border: 2px solid var(--elara-borda-forte);
 }
 
 html.alto-contraste input::placeholder,
 html.alto-contraste textarea::placeholder {
-  color: #ffffff;
-  opacity: 0.8;
+  color: var(--elara-placeholder);
+  opacity: 1;
+}
+
+/* Melhor identificação dos links */
+html.alto-contraste a:focus-visible,
+html.alto-contraste button:focus-visible,
+html.alto-contraste input:focus-visible,
+html.alto-contraste select:focus-visible,
+html.alto-contraste textarea:focus-visible {
+  outline: 3px solid var(--elara-azul);
+  outline-offset: 3px;
+}
+
+/* Bordas mais perceptíveis em componentes */
+html.alto-contraste .border {
+  border-color: var(--elara-borda-forte);
 }
 
 /* ========================================
@@ -259,8 +342,7 @@ html.reduzir-animacoes *::after {
   scroll-behavior: auto !important;
 }
 
-/* Respeita também a configuração do dispositivo */
-
+/* Respeita a configuração do dispositivo */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -292,6 +374,12 @@ html.reduzir-animacoes *::after {
 ::selection {
   background-color: var(--elara-terracota);
   color: #ffffff;
+}
+
+html.tema-escuro::selection,
+html.tema-escuro *::selection {
+  background-color: var(--elara-azul);
+  color: #080b0d;
 }
 
 /* ========================================
