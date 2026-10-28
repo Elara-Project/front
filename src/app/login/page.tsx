@@ -1,98 +1,145 @@
+
 "use client";
 
-import { FormEvent, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type TipoUsuario = "responsavel" | "admin" | "anunciante";
 
-type Conta = {
-  nome: string;
-  email: string;
-  senha: string;
+type UsuarioAPI = {
+  id?: string | number;
+  nome?: string;
+  email?: string;
   tipo?: TipoUsuario;
 };
 
+type RespostaLogin = {
+  usuario?: UsuarioAPI;
+  user?: UsuarioAPI;
+  access_token?: string;
+  accessToken?: string;
+  message?: string | string[];
+};
+
+const API_URL = (
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:3001"
+).replace(/\/$/, "");
+
 export default function LoginPage() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [carregando, setCarregando] = useState(false);
 
-  function fazerLogin(event: FormEvent<HTMLFormElement>) {
+  async function fazerLogin(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
-
     setErro("");
 
-    if (!email.trim()) {
+    const emailLimpo = email.trim().toLowerCase();
+
+    if (!emailLimpo) {
       setErro("Digite seu e-mail.");
       return;
     }
 
-    if (!email.includes("@")) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailLimpo)) {
       setErro("Digite um e-mail válido.");
       return;
     }
 
-    if (!senha.trim()) {
+    if (!senha) {
       setErro("Digite sua senha.");
-      return;
-    }
-
-    const contaSalva = localStorage.getItem("elara_conta");
-
-    if (!contaSalva) {
-      setErro("Nenhuma conta cadastrada neste dispositivo.");
       return;
     }
 
     setCarregando(true);
 
     try {
-      const conta: Conta = JSON.parse(contaSalva);
+      const resposta = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email: emailLimpo,
+          senha,
+        }),
+      });
 
-      if (
-        conta.email.toLowerCase() !==
-        email.trim().toLowerCase()
-      ) {
-        setErro("E-mail não cadastrado.");
-        setCarregando(false);
-        return;
+      const dados: RespostaLogin = await resposta
+        .json()
+        .catch(() => ({}));
+
+      if (!resposta.ok) {
+        const mensagem = dados.message;
+
+        if (resposta.status === 401) {
+          throw new Error("E-mail ou senha incorretos.");
+        }
+
+        if (Array.isArray(mensagem)) {
+          throw new Error(mensagem.join(" "));
+        }
+
+        throw new Error(
+          mensagem || "Não foi possível entrar na sua conta."
+        );
       }
 
-      if (conta.senha !== senha) {
-        setErro("Senha incorreta.");
-        setCarregando(false);
-        return;
+      const usuario = dados.usuario ?? dados.user;
+
+      if (!usuario) {
+        throw new Error(
+          "A API respondeu, mas não retornou os dados do usuário."
+        );
       }
 
-      const tipoUsuario: TipoUsuario =
-        conta.tipo ?? "responsavel";
-
+      // Armazena somente dados de exibição.
+      // A autenticação deve ser mantida pelo backend,
+      // preferencialmente com cookie HttpOnly seguro.
       localStorage.setItem(
         "elara_usuario",
         JSON.stringify({
-          nome: conta.nome,
-          email: conta.email,
-          tipo: tipoUsuario,
-          logado: true,
+          id: usuario.id,
+          nome: usuario.nome || "Meu perfil",
+          email: usuario.email || emailLimpo,
+          tipo: usuario.tipo || "responsavel",
         })
       );
 
-      if (tipoUsuario === "admin") {
-        window.location.href = "/admin";
-        return;
+      const tipo = usuario.tipo || "responsavel";
+
+      if (tipo === "admin") {
+        router.replace("/admin");
+      } else if (tipo === "anunciante") {
+        router.replace("/anunciante");
+      } else {
+        router.replace("/dashboard");
       }
 
-      if (tipoUsuario === "anunciante") {
-        window.location.href = "/anunciante";
-        return;
+      router.refresh();
+    } catch (error) {
+      if (error instanceof TypeError) {
+        setErro(
+          "Não foi possível conectar ao servidor. Verifique se a API está funcionando."
+        );
+      } else {
+        setErro(
+          error instanceof Error
+            ? error.message
+            : "Ocorreu um erro ao entrar."
+        );
       }
-
-      window.location.href = "/dashboard";
-    } catch {
-      setErro("Não foi possível acessar a conta cadastrada.");
+    } finally {
       setCarregando(false);
     }
   }
@@ -102,30 +149,28 @@ export default function LoginPage() {
       {/* LADO VISUAL */}
 
       <section className="relative hidden min-h-screen overflow-hidden bg-[#E7F0F4] p-10 lg:flex lg:flex-col lg:justify-between xl:p-14">
-        {/* FORMAS DECORATIVAS */}
-
         <div className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-white/40" />
 
         <div className="pointer-events-none absolute -bottom-32 -right-24 h-[430px] w-[430px] rounded-full border-[70px] border-white/30" />
 
         <div className="pointer-events-none absolute right-[12%] top-[22%] h-28 w-28 rounded-full bg-[#F3D8D0]/70" />
 
-        {/* LOGO */}
+        {/* LOGO DESKTOP */}
 
         <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center" aria-label="ELARA - Voltar ao início">
+          <Link href="/" className="inline-flex items-center">
             <Image
               src="/logo-elara.png"
               alt="ELARA - Cuidando de Quem Cuida"
-              width={190}
+              width={180}
               height={100}
               priority
-              className="h-auto w-[190px] object-contain"
+              className="h-auto w-[160px] object-contain"
             />
           </Link>
         </div>
 
-        {/* TEXTO PRINCIPAL */}
+        {/* APRESENTAÇÃO */}
 
         <div className="relative z-10 max-w-xl">
           <div className="mb-5 flex items-center gap-2">
@@ -184,8 +229,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* RODAPÉ */}
-
         <div className="relative z-10">
           <p className="text-xs font-semibold text-[#789099]">
             ELARA • Informação, organização e acolhimento.
@@ -193,7 +236,7 @@ export default function LoginPage() {
         </div>
       </section>
 
-      {/* LOGIN */}
+      {/* ÁREA DE LOGIN */}
 
       <section className="relative flex min-h-screen items-center justify-center px-5 py-8 sm:px-8 lg:bg-[#FDFBF7] lg:px-12">
         {/* LOGO MOBILE */}
@@ -201,15 +244,14 @@ export default function LoginPage() {
         <Link
           href="/"
           className="absolute left-5 top-5 flex items-center lg:hidden"
-          aria-label="ELARA - Voltar ao início"
         >
           <Image
             src="/logo-elara.png"
-            alt="ELARA - Cuidando de Quem Cuida"
-            width={150}
+            alt="ELARA - Página inicial"
+            width={145}
             height={80}
             priority
-            className="h-auto w-[150px] object-contain"
+            className="h-auto w-[125px] object-contain"
           />
         </Link>
 
@@ -226,8 +268,8 @@ export default function LoginPage() {
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-[#718187]">
-              Acesse sua conta para continuar organizando sua
-              rotina no ELARA.
+              Acesse sua conta para continuar organizando
+              sua rotina no ELARA.
             </p>
           </div>
 
@@ -237,6 +279,8 @@ export default function LoginPage() {
             onSubmit={fazerLogin}
             className="mt-8"
           >
+            {/* EMAIL */}
+
             <div>
               <label
                 htmlFor="email"
@@ -253,6 +297,7 @@ export default function LoginPage() {
                 <input
                   id="email"
                   type="email"
+                  required
                   value={email}
                   onChange={(event) => {
                     setEmail(event.target.value);
@@ -264,6 +309,8 @@ export default function LoginPage() {
                 />
               </div>
             </div>
+
+            {/* SENHA */}
 
             <div className="mt-5">
               <div className="mb-2 flex items-center justify-between gap-3">
@@ -279,7 +326,7 @@ export default function LoginPage() {
                   className="text-xs font-extrabold text-[#7FA2B8] transition hover:text-[#D97D64]"
                   onClick={() =>
                     alert(
-                      "A recuperação de senha será conectada ao backend posteriormente."
+                      "A recuperação de senha será disponibilizada quando o backend estiver integrado."
                     )
                   }
                 >
@@ -295,6 +342,7 @@ export default function LoginPage() {
                 <input
                   id="senha"
                   type={mostrarSenha ? "text" : "password"}
+                  required
                   value={senha}
                   onChange={(event) => {
                     setSenha(event.target.value);
@@ -322,7 +370,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* ERRO */}
+            {/* MENSAGEM DE ERRO */}
 
             {erro && (
               <div
@@ -345,7 +393,7 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* ENTRAR */}
+            {/* BOTÃO ENTRAR */}
 
             <button
               type="submit"
@@ -379,18 +427,18 @@ export default function LoginPage() {
             Criar minha conta
           </Link>
 
-          {/* VOLTAR */}
+          {/* VOLTAR AO INÍCIO */}
 
           <div className="mt-7 text-center">
             <Link
               href="/"
-              className="text-xs font-bold text-[#89969A] transition hover:text-[#D97D64]"
+              className="inline-block rounded-lg px-3 py-2 text-xs font-bold text-[#89969A] transition hover:text-[#D97D64]"
             >
               ← Voltar para o início
             </Link>
           </div>
 
-          {/* SEGURANÇA */}
+          {/* INFORMAÇÕES */}
 
           <div className="mt-8 rounded-[18px] border border-[#DCE8DC] bg-[#F3F8F3] p-4">
             <div className="flex gap-3">
@@ -404,8 +452,9 @@ export default function LoginPage() {
                 </p>
 
                 <p className="mt-1 text-[11px] leading-5 text-[#748576]">
-                  Seus dados de demonstração são utilizados para
-                  permitir o acesso às áreas do protótipo.
+                  A autenticação será realizada pela API do
+                  ELARA. Nenhuma senha será validada ou
+                  armazenada no navegador.
                 </p>
               </div>
             </div>
