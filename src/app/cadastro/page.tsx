@@ -3,6 +3,11 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001").replace(/\/$/, "");
+
+type RespostaAPI = { message?: string | string[] };
 
 export default function CadastroPage() {
   const router = useRouter();
@@ -17,83 +22,69 @@ export default function CadastroPage() {
     useState(false);
   const [carregando, setCarregando] = useState(false);
 
-  function criarConta(event: FormEvent<HTMLFormElement>) {
+  async function criarConta(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     setErro("");
 
-    if (!nome.trim()) {
+    const nomeLimpo = nome.trim();
+    const emailLimpo = email.trim().toLowerCase();
+
+    if (!nomeLimpo) {
       setErro("Digite seu nome completo.");
       return;
     }
-
-    if (!email.trim()) {
-      setErro("Digite seu e-mail.");
-      return;
-    }
-
-    if (!email.includes("@")) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailLimpo)) {
       setErro("Digite um e-mail válido.");
       return;
     }
-
-    if (!senha.trim()) {
-      setErro("Digite uma senha.");
-      return;
-    }
-
     if (senha.length < 6) {
       setErro("A senha deve ter pelo menos 6 caracteres.");
       return;
     }
-
-    if (!confirmarSenha.trim()) {
-      setErro("Confirme sua senha.");
-      return;
-    }
-
     if (senha !== confirmarSenha) {
       setErro("As senhas não são iguais.");
       return;
     }
 
-    const contaExistente = localStorage.getItem("elara_conta");
-
-    if (contaExistente) {
-      try {
-        const conta = JSON.parse(contaExistente);
-
-        if (
-          conta.email?.toLowerCase() ===
-          email.trim().toLowerCase()
-        ) {
-          setErro(
-            "Já existe uma conta cadastrada com este e-mail."
-          );
-          return;
-        }
-      } catch {
-        localStorage.removeItem("elara_conta");
-      }
-    }
-
     setCarregando(true);
+    try {
+      // Rota proposta: confirmar com a equipe responsável pelo backend.
+      const resposta = await fetch(`${API_URL}/auth/cadastro`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome: nomeLimpo,
+          email: emailLimpo,
+          senha,
+          tipo: "responsavel",
+        }),
+      });
 
-    const novaConta = {
-      nome: nome.trim(),
-      email: email.trim(),
-      senha,
-      tipo: "responsavel",
-    };
+      const dados: RespostaAPI = await resposta.json().catch(() => ({}));
+      if (!resposta.ok) {
+        const mensagem = Array.isArray(dados.message)
+          ? dados.message.join(" ")
+          : dados.message;
+        throw new Error(
+          resposta.status === 409
+            ? "Já existe uma conta cadastrada com este e-mail."
+            : mensagem || "Não foi possível criar sua conta."
+        );
+      }
 
-    localStorage.setItem(
-      "elara_conta",
-      JSON.stringify(novaConta)
-    );
-
-    localStorage.removeItem("elara_usuario");
-
-    router.push("/login");
+      // Não salva credenciais ou senhas no localStorage.
+      router.push("/login");
+    } catch (error) {
+      setErro(
+        error instanceof TypeError
+          ? "Não foi possível conectar ao servidor. O cadastro ficará disponível quando a API estiver pronta."
+          : error instanceof Error
+            ? error.message
+            : "Ocorreu um erro ao criar sua conta."
+      );
+    } finally {
+      setCarregando(false);
+    }
   }
 
   const senhaTemTamanho = senha.length >= 6;
@@ -111,19 +102,14 @@ export default function CadastroPage() {
           href="/"
           className="absolute left-5 top-5 flex items-center gap-2.5 lg:hidden"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#D97D64] text-sm font-black text-white">
-            E
-          </div>
-
-          <div>
-            <p className="font-extrabold tracking-[0.09em] text-[#D97D64]">
-              ELARA
-            </p>
-
-            <p className="text-[9px] font-semibold text-[#859397]">
-              Cuidando de quem cuida.
-            </p>
-          </div>
+          <Image
+            src="/logo-elara.png"
+            alt="ELARA - Cuidando de Quem Cuida"
+            width={150}
+            height={90}
+            priority
+            className="h-auto w-[130px] object-contain"
+          />
         </Link>
 
         <div className="w-full max-w-[470px] pb-5 pt-20 lg:py-10">
@@ -436,20 +422,15 @@ export default function CadastroPage() {
             href="/"
             className="inline-flex items-center gap-3"
           >
-            <div className="text-right">
-              <p className="text-2xl font-extrabold tracking-[0.1em] text-[#D97D64]">
-                ELARA
-              </p>
-
-              <p className="text-[10px] font-bold text-[#806F6A]">
-                Cuidando de quem cuida.
-              </p>
-            </div>
-
-            <div className="flex h-12 w-12 items-center justify-center rounded-[17px] bg-[#D97D64] text-lg font-black text-white shadow-sm">
-              E
-            </div>
-          </Link>
+              <Image
+                src="/logo-elara.png"
+                alt="ELARA - Cuidando de Quem Cuida"
+                width={180}
+                height={110}
+                priority
+                className="h-auto w-[165px] object-contain"
+              />
+            </Link>
         </div>
 
         {/* CONTEÚDO */}
