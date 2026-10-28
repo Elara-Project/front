@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 type TipoUsuario = "responsavel" | "admin" | "anunciante";
 
@@ -112,20 +113,15 @@ export default function LoginPage() {
         {/* LOGO */}
 
         <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-[17px] bg-[#D97D64] text-lg font-black text-white shadow-sm">
-              E
-            </div>
-
-            <div>
-              <p className="text-2xl font-extrabold tracking-[0.1em] text-[#D97D64]">
-                ELARA
-              </p>
-
-              <p className="text-[10px] font-bold text-[#71868F]">
-                Cuidando de quem cuida.
-              </p>
-            </div>
+          <Link href="/" className="inline-flex items-center" aria-label="ELARA - Voltar ao início">
+            <Image
+              src="/logo-elara.png"
+              alt="ELARA - Cuidando de Quem Cuida"
+              width={190}
+              height={100}
+              priority
+              className="h-auto w-[190px] object-contain"
+            />
           </Link>
         </div>
 
@@ -204,21 +200,17 @@ export default function LoginPage() {
 
         <Link
           href="/"
-          className="absolute left-5 top-5 flex items-center gap-2.5 lg:hidden"
+          className="absolute left-5 top-5 flex items-center lg:hidden"
+          aria-label="ELARA - Voltar ao início"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#D97D64] text-sm font-black text-white">
-            E
-          </div>
-
-          <div>
-            <p className="font-extrabold tracking-[0.09em] text-[#D97D64]">
-              ELARA
-            </p>
-
-            <p className="text-[9px] font-semibold text-[#859397]">
-              Cuidando de quem cuida.
-            </p>
-          </div>
+          <Image
+            src="/logo-elara.png"
+            alt="ELARA - Cuidando de Quem Cuida"
+            width={150}
+            height={80}
+            priority
+            className="h-auto w-[150px] object-contain"
+          />
         </Link>
 
         <div className="w-full max-w-[460px] pt-16 lg:pt-0">
