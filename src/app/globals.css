@@ -1,0 +1,1585 @@
+@import "tailwindcss";
+
+/* ========================================
+   TEMA CLARO - ELARA
+======================================== */
+
+:root {
+  color-scheme: light;
+
+  /* Identidade */
+  --elara-terracota: #d97d64;
+  --elara-terracota-hover: #c96f57;
+  --elara-azul: #7fa2b8;
+  --elara-verde: #8fbc8f;
+
+  /* Estrutura */
+  --elara-fundo: #f8f5f1;
+  --elara-superficie: #ffffff;
+  --elara-superficie-secundaria: #fbf9f6;
+  --elara-superficie-hover: #f8f5f1;
+
+  /* Textos */
+  --elara-texto: #2c3e44;
+  --elara-texto-secundario: #52656c;
+  --elara-texto-suave: #89979c;
+  --elara-texto-muito-suave: #a6b0b4;
+
+  /* Bordas */
+  --elara-borda: #eee8e2;
+  --elara-borda-forte: #e3dcd5;
+
+  /* Sidebar */
+  --elara-sidebar: #ffffff;
+  --elara-sidebar-card: #fbf9f6;
+
+  /* Estados */
+  --elara-terracota-suave: #f6e2dc;
+  --elara-terracota-texto: #b95f49;
+
+  --elara-azul-suave: #e7f0f4;
+  --elara-azul-texto: #5e8398;
+
+  --elara-verde-suave: #edf5ed;
+  --elara-verde-texto: #699969;
+
+  --elara-amarelo-suave: #fff3d9;
+  --elara-amarelo-texto: #a67b27;
+
+  /* Formulários */
+  --elara-input: #ffffff;
+  --elara-placeholder: #9aa5a9;
+
+  /* Overlay */
+  --elara-overlay: rgba(44, 62, 68, 0.25);
+}
+
+/* ========================================
+   CONFIGURAÇÕES GERAIS
+======================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--elara-fundo);
+  color: var(--elara-texto);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ========================================
+   MODO ESCURO
+======================================== */
+
+html.tema-escuro {
+  color-scheme: dark;
+
+  --elara-terracota: #ed8b71;
+  --elara-terracota-hover: #f29a82;
+
+  --elara-azul: #8fb7ca;
+  --elara-verde: #9bc99b;
+
+  --elara-fundo: #182226;
+  --elara-superficie: #243238;
+  --elara-superficie-secundaria: #29383e;
+  --elara-superficie-hover: #304047;
+
+  --elara-texto: #f4f7f8;
+  --elara-texto-secundario: #d0dade;
+  --elara-texto-suave: #aebdc2;
+  --elara-texto-muito-suave: #91a3aa;
+
+  --elara-borda: #405158;
+  --elara-borda-forte: #52646b;
+
+  --elara-sidebar: #202d33;
+  --elara-sidebar-card: #29383e;
+
+  --elara-terracota-suave: #50372f;
+  --elara-terracota-texto: #ffb19d;
+
+  --elara-azul-suave: #29434e;
+  --elara-azul-texto: #b8ddea;
+
+  --elara-verde-suave: #2d4534;
+  --elara-verde-texto: #b1dcb2;
+
+  --elara-amarelo-suave: #4b4027;
+  --elara-amarelo-texto: #f0ce7a;
+
+  --elara-input: #1e292e;
+  --elara-placeholder: #9babb1;
+
+  --elara-overlay: rgba(0, 0, 0, 0.55);
+}
+
+/* ========================================
+   FORMULÁRIOS NO MODO ESCURO
+======================================== */
+
+html.tema-escuro input,
+html.tema-escuro textarea,
+html.tema-escuro select {
+  background-color: var(--elara-input);
+  color: var(--elara-texto);
+  border-color: var(--elara-borda);
+}
+
+html.tema-escuro input::placeholder,
+html.tema-escuro textarea::placeholder {
+  color: var(--elara-placeholder);
+}
+
+/* ========================================
+   ALTO CONTRASTE - TEMA CLARO
+
+   Não ativa o modo escuro.
+======================================== */
+
+html.alto-contraste:not(.tema-escuro) {
+  color-scheme: light;
+
+  /* Identidade com cores mais legíveis */
+  --elara-terracota: #a43d25;
+  --elara-terracota-hover: #812b19;
+
+  --elara-azul: #215b7d;
+  --elara-verde: #286b38;
+
+  /* Fundos continuam claros */
+  --elara-fundo: #ffffff;
+  --elara-superficie: #ffffff;
+  --elara-superficie-secundaria: #f5f5f5;
+  --elara-superficie-hover: #ededed;
+
+  /* Textos mais escuros */
+  --elara-texto: #111111;
+  --elara-texto-secundario: #222222;
+  --elara-texto-suave: #333333;
+  --elara-texto-muito-suave: #444444;
+
+  /* Bordas reforçadas */
+  --elara-borda: #555555;
+  --elara-borda-forte: #222222;
+
+  /* Sidebar claro */
+  --elara-sidebar: #ffffff;
+  --elara-sidebar-card: #f5f5f5;
+
+  /* Estados */
+  --elara-terracota-suave: #fff0e9;
+  --elara-terracota-texto: #872b18;
+
+  --elara-azul-suave: #e7f2fa;
+  --elara-azul-texto: #174c6d;
+
+  --elara-verde-suave: #e5f4e7;
+  --elara-verde-texto: #205b2d;
+
+  --elara-amarelo-suave: #fff2c7;
+  --elara-amarelo-texto: #765000;
+
+  /* Formulários */
+  --elara-input: #ffffff;
+  --elara-placeholder: #444444;
+
+  --elara-overlay: rgba(0, 0, 0, 0.45);
+}
+
+/* ========================================
+   ALTO CONTRASTE - TEMA ESCURO
+
+   Mantém o tema escuro.
+======================================== */
+
+html.tema-escuro.alto-contraste {
+  color-scheme: dark;
+
+  /* Identidade */
+  --elara-terracota: #ffb39e;
+  --elara-terracota-hover: #ffd0c2;
+
+  --elara-azul: #9cdbff;
+  --elara-verde: #b5f0b5;
+
+  /* Fundos escuros */
+  --elara-fundo: #080b0d;
+  --elara-superficie: #111719;
+  --elara-superficie-secundaria: #182024;
+  --elara-superficie-hover: #263238;
+
+  /* Textos claros */
+  --elara-texto: #ffffff;
+  --elara-texto-secundario: #f1f5f6;
+  --elara-texto-suave: #e0e9ec;
+  --elara-texto-muito-suave: #d0dde1;
+
+  /* Bordas reforçadas */
+  --elara-borda: #b8c9d0;
+  --elara-borda-forte: #ffffff;
+
+  /* Sidebar escuro */
+  --elara-sidebar: #0d1417;
+  --elara-sidebar-card: #192327;
+
+  /* Estados */
+  --elara-terracota-suave: #45291f;
+  --elara-terracota-texto: #ffd0c2;
+
+  --elara-azul-suave: #173849;
+  --elara-azul-texto: #b9e6ff;
+
+  --elara-verde-suave: #203d2a;
+  --elara-verde-texto: #c6f5c6;
+
+  --elara-amarelo-suave: #453914;
+  --elara-amarelo-texto: #ffe18a;
+
+  /* Formulários */
+  --elara-input: #111719;
+  --elara-placeholder: #d0dde1;
+
+  --elara-overlay: rgba(0, 0, 0, 0.75);
+}
+
+/* ========================================
+   REGRAS COMUNS DO ALTO CONTRASTE
+======================================== */
+
+html.alto-contraste body {
+  background-color: var(--elara-fundo);
+  color: var(--elara-texto);
+}
+
+/* Reforça bordas dos formulários */
+html.alto-contraste input,
+html.alto-contraste textarea,
+html.alto-contraste select {
+  background-color: var(--elara-input);
+  color: var(--elara-texto);
+  border: 2px solid var(--elara-borda-forte);
+}
+
+html.alto-contraste input::placeholder,
+html.alto-contraste textarea::placeholder {
+  color: var(--elara-placeholder);
+  opacity: 1;
+}
+
+/* Melhor identificação dos links */
+html.alto-contraste a:focus-visible,
+html.alto-contraste button:focus-visible,
+html.alto-contraste input:focus-visible,
+html.alto-contraste select:focus-visible,
+html.alto-contraste textarea:focus-visible {
+  outline: 3px solid var(--elara-azul);
+  outline-offset: 3px;
+}
+
+/* Bordas mais perceptíveis em componentes */
+html.alto-contraste .border {
+  border-color: var(--elara-borda-forte);
+}
+
+/* ========================================
+   TAMANHO DA FONTE
+======================================== */
+
+html.fonte-pequena {
+  font-size: 90%;
+}
+
+html.fonte-normal {
+  font-size: 100%;
+}
+
+html.fonte-grande {
+  font-size: 118%;
+}
+
+/* ========================================
+   REDUZIR ANIMAÇÕES
+======================================== */
+
+html.reduzir-animacoes {
+  scroll-behavior: auto;
+}
+
+html.reduzir-animacoes *,
+html.reduzir-animacoes *::before,
+html.reduzir-animacoes *::after {
+  animation-duration: 0.01ms !important;
+  animation-delay: 0ms !important;
+  animation-iteration-count: 1 !important;
+
+  transition-duration: 0.01ms !important;
+  transition-delay: 0ms !important;
+
+  scroll-behavior: auto !important;
+}
+
+/* Respeita a configuração do dispositivo */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ========================================
+   FOCO DO TECLADO
+======================================== */
+
+*:focus-visible {
+  outline: 3px solid var(--elara-azul);
+  outline-offset: 3px;
+}
+
+/* ========================================
+   SELEÇÃO DE TEXTO
+======================================== */
+
+::selection {
+  background-color: var(--elara-terracota);
+  color: #ffffff;
+}
+
+html.tema-escuro::selection,
+html.tema-escuro *::selection {
+  background-color: var(--elara-azul);
+  color: #080b0d;
+}
+
+/* ========================================
+   SCROLLBAR
+======================================== */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--elara-texto-muito-suave) var(--elara-superficie);
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--elara-superficie);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--elara-texto-muito-suave);
+  border-radius: 999px;
+}
+
+/* ELARA · Interface do sistema
+   Aplicação escopada para preservar a home pública e os controles de acessibilidade. */
+:root {
+  --elara-offwhite: var(--elara-fundo);
+  --elara-grafite: var(--elara-texto);
+  --elara-action: #a9533d;
+  --elara-action-hover: #8f432f;
+  --elara-ink: #263b3d;
+}
+html.tema-escuro {
+  --elara-action: #f1a48e;
+  --elara-action-hover: #ffc1ac;
+  --elara-ink: #233639;
+}
+html.alto-contraste:not(.tema-escuro) {
+  --elara-action: #812b19;
+  --elara-action-hover: #64200f;
+}
+html.tema-escuro.alto-contraste {
+  --elara-action: #ffd0c2;
+  --elara-action-hover: #ffffff;
+}
+.elara-app {
+  min-height: 100dvh;
+  display: flex;
+  background: var(--elara-fundo);
+  color: var(--elara-texto);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.elara-app :where(h1, h2, h3, p) {
+  overflow-wrap: anywhere;
+}
+.elara-app :where(button, a, input, select, textarea) {
+  -webkit-tap-highlight-color: transparent;
+}
+.elara-main {
+  min-width: 0;
+  flex: 1;
+  padding-bottom: 2rem;
+}
+.elara-workspace-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 68px;
+  padding: 0 clamp(24px, 3.2vw, 48px);
+  border-bottom: 1px solid var(--elara-borda);
+  color: var(--elara-texto-secundario);
+  font-size: 0.75rem;
+}
+.elara-workspace-bar span:first-child {
+  font-weight: 700;
+  color: var(--elara-texto);
+}
+.elara-content {
+  width: 100%;
+  max-width: 1380px;
+  margin-inline: auto;
+  padding: 32px clamp(24px, 3.2vw, 48px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.elara-page-heading {
+  padding: 2px 0 8px;
+}
+.elara-eyebrow {
+  margin: 0 0 10px;
+  color: var(--elara-texto-secundario);
+  font-size: 0.69rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.elara-page-heading h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 2.4vw, 2.1rem);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+.elara-page-description {
+  max-width: 760px;
+  margin: 12px 0 0;
+  color: var(--elara-texto-secundario);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+.elara-card {
+  min-width: 0;
+  border: 1px solid var(--elara-borda-forte);
+  border-radius: 14px;
+  background: var(--elara-superficie);
+  padding: 24px;
+  box-shadow: 0 2px 5px rgb(35 50 52 / 2%);
+}
+.elara-card > * + * {
+  margin-top: 16px;
+}
+.elara-card :where(h2, h3) {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+.elara-card h2.text-xl {
+  font-size: 1.125rem;
+}
+.elara-card h2.text-2xl {
+  font-size: 1.35rem;
+}
+.elara-card > p {
+  color: var(--elara-texto-secundario);
+  font-size: 0.875rem;
+}
+.elara-card a:not(.elara-button) {
+  text-underline-offset: 4px;
+}
+.elara-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.elara-input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  border: 1px solid var(--elara-borda-forte);
+  border-radius: 8px;
+  background: var(--elara-input);
+  color: var(--elara-texto);
+  padding: 11px 13px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-weight: 400;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.elara-input::placeholder {
+  color: var(--elara-placeholder);
+}
+.elara-input:focus {
+  border-color: var(--elara-azul-texto);
+  box-shadow: 0 0 0 3px var(--elara-azul-suave);
+}
+.elara-input:disabled {
+  cursor: not-allowed;
+  background: var(--elara-superficie-secundaria);
+  opacity: 0.75;
+}
+textarea.elara-input {
+  min-height: 116px;
+  resize: vertical;
+}
+input[type="file"].elara-input {
+  padding: 9px;
+  font-size: 0.8125rem;
+}
+input[type="file"].elara-input::file-selector-button {
+  background: var(--elara-superficie-secundaria);
+  border: 1px solid var(--elara-borda-forte);
+  border-radius: 5px;
+  padding: 5px 8px;
+  margin-right: 10px;
+  color: var(--elara-texto);
+}
+.elara-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  max-width: 100%;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  font-weight: 700;
+  text-align: center;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    transform 0.15s;
+}
+.elara-button-primary {
+  background: var(--elara-action);
+  color: #fff;
+}
+.elara-button-primary:hover {
+  background: var(--elara-action-hover);
+}
+html.tema-escuro .elara-button-primary {
+  color: #182226;
+}
+.elara-button-secondary {
+  border-color: var(--elara-borda-forte);
+  background: var(--elara-superficie);
+  color: var(--elara-texto);
+}
+.elara-button-secondary:hover {
+  background: var(--elara-superficie-hover);
+  border-color: var(--elara-texto-suave);
+}
+.elara-button-quiet {
+  background: transparent;
+  color: var(--elara-action);
+  padding-inline: 4px;
+}
+.elara-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.elara-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.elara-actions-end {
+  align-items: flex-end;
+}
+.elara-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+.elara-form-footer {
+  grid-column: 1/-1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-top: 1px solid var(--elara-borda);
+  padding-top: 20px;
+}
+.elara-feedback-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.elara-feedback {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 15px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+.elara-feedback svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.elara-feedback p {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+.elara-feedback button {
+  flex-shrink: 0;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.elara-feedback-success {
+  background: var(--elara-verde-suave);
+  color: var(--elara-verde-texto);
+  border-color: var(--elara-borda-forte);
+}
+.elara-feedback-error {
+  color: var(--elara-texto-secundario);
+  background: var(--elara-superficie-secundaria);
+  border-color: var(--elara-borda-forte);
+}
+.elara-feedback-error svg {
+  color: var(--elara-action);
+}
+.elara-loading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--elara-texto-secundario);
+  font-size: 0.8125rem;
+}
+.elara-loading-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--elara-azul-texto);
+  border-radius: 50%;
+}
+.elara-sidebar {
+  position: sticky;
+  top: 0;
+  flex: 0 0 240px;
+  width: 240px;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--elara-sidebar);
+  border-right: 1px solid var(--elara-borda-forte);
+}
+.elara-brand {
+  min-height: 111px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 27px;
+  border-bottom: 1px solid var(--elara-borda);
+}
+.elara-brand-image {
+  width: 132px;
+  height: 78px;
+  object-fit: contain;
+}
+.elara-nav-scroll {
+  padding: 27px 16px 20px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+.elara-nav-label {
+  margin: 0 12px 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--elara-texto-secundario);
+  font-size: 0.625rem;
+  font-weight: 700;
+}
+.elara-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.elara-nav-link {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 7px;
+  text-align: left;
+  color: var(--elara-texto-secundario);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.elara-nav-link svg {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+.elara-nav-link span:first-of-type {
+  flex: 1;
+}
+.elara-nav-link:hover {
+  background: var(--elara-superficie-hover);
+  color: var(--elara-texto);
+}
+.elara-nav-link.is-active {
+  background: var(--elara-terracota-suave);
+  color: var(--elara-action);
+  font-weight: 750;
+}
+.elara-nav-marker {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.elara-nav-divider {
+  height: 1px;
+  background: var(--elara-borda);
+  margin: 25px 12px;
+}
+.elara-nav-note {
+  margin: 32px 12px 12px;
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  color: var(--elara-texto-secundario);
+  font-size: 0.75rem;
+  line-height: 1.8;
+}
+.elara-note-line {
+  width: 2px;
+  background: var(--elara-terracota);
+}
+.elara-nav-note p {
+  margin: 0;
+}
+.elara-account {
+  flex-shrink: 0;
+  border-top: 1px solid var(--elara-borda);
+  padding: 17px 20px;
+}
+.elara-account-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+}
+.elara-account-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--elara-borda-forte);
+  background: var(--elara-superficie-secundaria);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.elara-account-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.elara-account-name strong {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.elara-account-name small {
+  color: var(--elara-texto-secundario);
+  font-size: 0.65rem;
+  margin-top: 1px;
+}
+.elara-logout {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 38px;
+  margin-top: 8px;
+  color: var(--elara-texto-secundario);
+  font-size: 0.75rem;
+}
+.elara-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--elara-borda-forte);
+  border-radius: 8px;
+  color: var(--elara-texto);
+  background: var(--elara-superficie);
+}
+.elara-mobile-header,
+.elara-bottom-nav {
+  display: none;
+}
+.elara-drawer-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+.elara-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--elara-overlay);
+  backdrop-filter: blur(3px);
+}
+.elara-drawer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: min(340px, calc(100vw - 28px));
+  display: flex;
+  flex-direction: column;
+  background: var(--elara-sidebar);
+  box-shadow: -12px 0 48px rgb(0 0 0 / 10%);
+}
+.elara-skip-link {
+  position: fixed;
+  left: 12px;
+  top: -80px;
+  z-index: 150;
+  background: var(--elara-superficie);
+  padding: 12px 18px;
+  border: 2px solid var(--elara-action);
+  border-radius: 6px;
+}
+.elara-skip-link:focus {
+  top: 12px;
+}
+/* Compactar as duas telas que mantêm sua composição própria. */
+.elara-agenda-content > header {
+  margin-bottom: 0;
+}
+.elara-agenda-content :where(section, article, aside).rounded-\[30px\],
+.elara-agenda-content :where(section, article, aside).rounded-\[26px\],
+.elara-agenda-content :where(section, article, aside).rounded-\[24px\] {
+  border-radius: 12px;
+}
+.elara-agenda-content button.rounded-full {
+  border-radius: 8px;
+}
+.elara-app .pagina-ia.elara-main {
+  min-height: 100dvh;
+  padding: 32px clamp(24px, 3.2vw, 48px);
+  background: var(--elara-fundo);
+  color: var(--elara-texto);
+}
+.elara-app .pagina-ia.elara-main .cabecalho h1 {
+  font-size: 2.1rem;
+  font-weight: 750;
+  letter-spacing: -0.035em;
+}
+.elara-app .pagina-ia.elara-main :where(.painel, .chat, .aviso) {
+  border-radius: 12px;
+  box-shadow: none;
+}
+.elara-app .pagina-ia.elara-main .avatar {
+  border-radius: 8px;
+}
+.elara-app .pagina-ia.elara-main .estrutura {
+  grid-template-columns: minmax(200px, 0.65fr) minmax(0, 1.8fr);
+  align-items: start;
+}
+@media (min-width: 1600px) {
+  .elara-sidebar {
+    flex-basis: 252px;
+    width: 252px;
+  }
+}
+@media (max-width: 1023px) {
+  .elara-sidebar {
+    display: none;
+  }
+  .elara-mobile-header {
+    display: flex;
+    position: fixed;
+    inset: 0 0 auto;
+    height: 64px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    border-bottom: 1px solid var(--elara-borda-forte);
+    background: var(--elara-sidebar);
+    z-index: 40;
+  }
+  .elara-mobile-logo {
+    width: 98px;
+    height: 55px;
+    object-fit: contain;
+  }
+  .elara-mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .elara-mobile-header .elara-icon-button {
+    height: 36px;
+    width: 36px;
+    border: none;
+    background: transparent;
+  }
+  .elara-mobile-header .elara-profile-button {
+    background: var(--elara-superficie-secundaria);
+    border: 1px solid var(--elara-borda);
+  }
+  .elara-main {
+    padding-top: 64px;
+    padding-bottom: calc(90px + env(safe-area-inset-bottom));
+  }
+  .elara-workspace-bar {
+    display: none;
+  }
+  .elara-content {
+    padding: 28px 28px;
+  }
+  .elara-bottom-nav {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 45;
+    border-top: 1px solid var(--elara-borda-forte);
+    background: var(--elara-sidebar);
+    padding: 7px 8px calc(7px + env(safe-area-inset-bottom));
+  }
+  .elara-bottom-nav :where(a, button) {
+    display: flex;
+    min-width: 0;
+    min-height: 52px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 0.625rem;
+    line-height: 1.2;
+    font-weight: 600;
+    color: var(--elara-texto-secundario);
+    border-radius: 7px;
+  }
+  .elara-bottom-nav .is-active {
+    color: var(--elara-action);
+    background: var(--elara-terracota-suave);
+    font-weight: 750;
+  }
+  .elara-app .pagina-ia.elara-main {
+    padding-top: 90px;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+}
+@media (max-width: 639px) {
+  .elara-content {
+    padding: 25px 16px;
+    gap: 20px;
+  }
+  .elara-page-heading {
+    padding-bottom: 2px;
+  }
+  .elara-page-heading h1 {
+    font-size: 1.7rem;
+  }
+  .elara-eyebrow {
+    margin-bottom: 9px;
+    font-size: 0.625rem;
+  }
+  .elara-page-description {
+    margin-top: 10px;
+    font-size: 0.8125rem;
+    line-height: 1.65;
+  }
+  .elara-card {
+    padding: 19px 16px;
+    border-radius: 11px;
+  }
+  .elara-card > * + * {
+    margin-top: 14px;
+  }
+  .elara-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 19px;
+  }
+  .elara-input {
+    font-size: 1rem;
+    min-height: 48px;
+    padding: 12px;
+  }
+  .elara-field {
+    gap: 7px;
+  }
+  .elara-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    width: 100%;
+  }
+  .elara-actions > :only-child {
+    grid-column: 1/-1;
+  }
+  .elara-actions .elara-button {
+    width: 100%;
+    padding: 11px 9px;
+  }
+  .elara-feedback {
+    flex-wrap: wrap;
+    padding: 12px;
+  }
+  .elara-feedback p {
+    flex-basis: calc(100% - 30px);
+  }
+  .elara-feedback button {
+    margin-left: 29px;
+    min-height: 30px;
+  }
+  .elara-agenda-content header {
+    gap: 16px;
+  }
+  .elara-agenda-content header > button {
+    width: 100%;
+  }
+  .elara-agenda-content > section.grid {
+    gap: 14px;
+  }
+  .elara-app .pagina-ia.elara-main {
+    padding: 88px 16px calc(96px + env(safe-area-inset-bottom));
+  }
+  .elara-app .pagina-ia.elara-main .cabecalho {
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .elara-app .pagina-ia.elara-main .cabecalho h1 {
+    font-size: 1.7rem;
+  }
+  .elara-app .pagina-ia.elara-main .estrutura {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .elara-app .pagina-ia.elara-main .painel {
+    display: none;
+  }
+  .elara-app .pagina-ia.elara-main .chat {
+    min-width: 0;
+  }
+  .elara-app .pagina-ia.elara-main .mensagens {
+    min-height: 260px;
+    max-height: 50dvh;
+  }
+  .elara-app .pagina-ia.elara-main input {
+    min-width: 0;
+    font-size: 1rem;
+  }
+}
+
+/* Visão geral: hierarquia e estados vazios sem dados demonstrativos. */
+.elara-dashboard-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 0.8fr);
+  gap: 32px;
+  background: var(--elara-ink);
+  color: #fff;
+  border-radius: 14px;
+  padding: 32px 36px;
+}
+.elara-hero-label {
+  margin: 0 0 17px;
+  color: #e9b39f;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+}
+.elara-dashboard-hero h2 {
+  margin: 0;
+  font-size: clamp(1.7rem, 2.4vw, 2.25rem);
+  font-weight: 650;
+  line-height: 1.22;
+  letter-spacing: -0.035em;
+}
+.elara-dashboard-hero > div > p:not(.elara-hero-label) {
+  margin: 14px 0 0;
+  color: #d2ddda;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  max-width: 400px;
+}
+.elara-hero-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 25px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  border-bottom: 1px solid #aabbb3;
+  padding-bottom: 5px;
+}
+.elara-hero-side {
+  border-left: 1px solid #58706b;
+  padding-left: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.elara-hero-side > span {
+  font-size: 0.55rem;
+  letter-spacing: 0.11em;
+  color: #c1d1ca;
+  font-weight: 700;
+}
+.elara-dashboard-hero .elara-hero-side > p {
+  margin: 12px 0 17px;
+  font-size: 1.45rem;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+.elara-hero-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #d9e4df;
+  font-size: 0.7rem;
+}
+.elara-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 17px;
+}
+.elara-stat {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  border: 1px solid var(--elara-borda-forte);
+  border-radius: 12px;
+  padding: 20px 22px;
+  background: var(--elara-superficie);
+  transition: border-color 0.15s;
+}
+.elara-stat:hover {
+  border-color: var(--elara-texto-suave);
+}
+.elara-stat-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+  color: var(--elara-texto-secundario);
+}
+.elara-stat-top p {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.elara-stat-top svg {
+  flex-shrink: 0;
+  color: var(--elara-azul-texto);
+}
+.elara-stat > strong {
+  font-size: 2.15rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  margin: 17px 0;
+}
+.elara-stat-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.65rem;
+  color: var(--elara-texto-secundario);
+}
+.elara-stat-bottom svg {
+  flex-shrink: 0;
+}
+.elara-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+.elara-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--elara-borda);
+}
+.elara-section-label {
+  margin: 0 0 6px;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--elara-texto-secundario);
+}
+.elara-section-heading h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 750;
+}
+.elara-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--elara-action);
+}
+.elara-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 25px 12px 18px;
+}
+.elara-empty-symbol {
+  display: grid;
+  place-items: center;
+  height: 54px;
+  width: 54px;
+  background: var(--elara-superficie-secundaria);
+  border: 1px solid var(--elara-borda);
+  color: var(--elara-azul-texto);
+  border-radius: 12px;
+  margin-bottom: 17px;
+}
+.elara-empty-state h3 {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+.elara-empty-state p {
+  max-width: 330px;
+  margin: 10px 0 20px;
+  font-size: 0.75rem;
+  line-height: 1.8;
+  color: var(--elara-texto-secundario);
+}
+.elara-next-appointment {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 23px 0;
+}
+.elara-appointment-symbol {
+  display: grid;
+  place-items: center;
+  height: 48px;
+  width: 48px;
+  border-radius: 10px;
+  background: var(--elara-terracota-suave);
+  color: var(--elara-action);
+  flex-shrink: 0;
+}
+.elara-next-appointment h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.elara-next-appointment p {
+  margin: 7px 0 0;
+  font-size: 0.75rem;
+  color: var(--elara-texto-secundario);
+}
+.elara-today-list {
+  border-top: 1px solid var(--elara-borda);
+  padding-top: 18px;
+}
+.elara-today-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 1px solid var(--elara-borda);
+  padding: 14px 0;
+  font-size: 0.75rem;
+}
+.elara-today-row time {
+  font-weight: 750;
+  color: var(--elara-action);
+}
+.elara-today-row > div {
+  min-width: 0;
+  flex: 1;
+}
+.elara-today-row strong {
+  font-weight: 700;
+}
+.elara-today-row p {
+  margin: 3px 0 0;
+  color: var(--elara-texto-secundario);
+}
+.elara-today-row > span {
+  font-size: 0.625rem;
+  color: var(--elara-texto-secundario);
+}
+.elara-shortcut-list {
+  display: flex;
+  flex-direction: column;
+}
+.elara-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--elara-borda);
+}
+.elara-shortcut:last-child {
+  border-bottom: 0;
+  padding-bottom: 2px;
+}
+.elara-shortcut:hover h3 {
+  color: var(--elara-action);
+}
+.elara-shortcut-icon {
+  display: grid;
+  place-items: center;
+  height: 36px;
+  width: 36px;
+  border-radius: 8px;
+  background: var(--elara-superficie-secundaria);
+  border: 1px solid var(--elara-borda);
+  color: var(--elara-texto-secundario);
+  flex-shrink: 0;
+}
+.elara-shortcut > div {
+  min-width: 0;
+  flex: 1;
+}
+.elara-shortcut h3 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin: 0;
+}
+.elara-shortcut p {
+  margin: 3px 0 0;
+  font-size: 0.65rem;
+  color: var(--elara-texto-secundario);
+}
+.elara-shortcut > svg {
+  color: var(--elara-texto-suave);
+  flex-shrink: 0;
+}
+.elara-assistant-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border: 1px solid var(--elara-borda-forte);
+  border-radius: 12px;
+  padding: 24px;
+  background: var(--elara-azul-suave);
+}
+.elara-assistant-label {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.elara-assistant-label > span {
+  color: var(--elara-azul-texto);
+  display: grid;
+  place-items: center;
+  height: 42px;
+  width: 42px;
+  border: 1px solid var(--elara-borda-forte);
+  border-radius: 10px;
+  background: var(--elara-superficie);
+  flex-shrink: 0;
+}
+.elara-assistant-label h2 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+.elara-assistant-label p {
+  margin: 4px 0 0;
+  font-size: 0.75rem;
+  color: var(--elara-texto-secundario);
+}
+.elara-assistant-strip > a {
+  flex-shrink: 0;
+}
+@media (max-width: 1199px) {
+  .elara-dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .elara-shortcut-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+  .elara-shortcut:last-child {
+    padding-bottom: 15px;
+  }
+  .elara-assistant-strip {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 17px;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1150px) {
+  .elara-stat {
+    padding: 17px 15px;
+  }
+}
+@media (max-width: 639px) {
+  .elara-dashboard-hero {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 25px 22px;
+    gap: 24px;
+    border-radius: 11px;
+  }
+  .elara-dashboard-hero h2 {
+    font-size: 1.8rem;
+  }
+  .elara-hero-side {
+    display: none;
+  }
+  .elara-dashboard-hero > div > p:not(.elara-hero-label) {
+    max-width: 100%;
+    font-size: 0.75rem;
+  }
+  .elara-hero-link {
+    margin-top: 20px;
+    font-size: 0.75rem;
+  }
+  .elara-stats-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .elara-stat {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 12px;
+    padding: 16px;
+    border-radius: 9px;
+  }
+  .elara-stat-top {
+    grid-column: 1;
+    grid-row: 1;
+    justify-content: flex-start;
+    gap: 9px;
+  }
+  .elara-stat-top svg {
+    order: -1;
+  }
+  .elara-stat-top p {
+    font-size: 0.75rem;
+  }
+  .elara-stat > strong {
+    grid-column: 2;
+    grid-row: 1/3;
+    margin: 0;
+    align-self: center;
+    font-size: 1.8rem;
+  }
+  .elara-stat-bottom {
+    grid-column: 1;
+    grid-row: 2;
+    margin: 4px 0 0 28px;
+  }
+  .elara-stat-bottom svg {
+    display: none;
+  }
+  .elara-dashboard-grid {
+    gap: 18px;
+  }
+  .elara-shortcut-list {
+    display: flex;
+    gap: 0;
+  }
+  .elara-empty-state {
+    padding: 22px 0 12px;
+  }
+  .elara-empty-state p {
+    max-width: 100%;
+    font-size: 0.75rem;
+  }
+  .elara-empty-state .elara-button {
+    width: 100%;
+  }
+  .elara-assistant-strip {
+    padding: 19px 16px;
+  }
+  .elara-assistant-strip > a {
+    width: 100%;
+    font-size: 0.75rem;
+  }
+  .elara-assistant-label {
+    gap: 12px;
+  }
+  .elara-assistant-label h2 {
+    font-size: 0.8125rem;
+  }
+  .elara-assistant-label p {
+    font-size: 0.7rem;
+    line-height: 1.7;
+  }
+}
+
+.elara-agenda-content :where(.font-extrabold, .font-black) {
+  font-weight: 700;
+}
+@media (max-width: 639px) {
+  .elara-agenda-content :where(input, textarea, select) {
+    font-size: 1rem;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .elara-app .pagina-ia.elara-main .mensagens {
+    height: min(430px, 50dvh);
+  }
+}
