@@ -1,9 +1,9 @@
-import ProtectedRoute from "../../components/ProtectedRoute";
+import type { ReactNode } from "react";
 
 export default function SistemaLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return <ProtectedRoute>{children}</ProtectedRoute>;
+}: {
+  children: ReactNode;
+}) {
+  return <>{children}</>;
 }
