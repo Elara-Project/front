@@ -1,0 +1,199 @@
+"use client";
+import { ReactNode, useCallback, useEffect, useState } from "react";
+import Sidebar from "../Sidebar";
+import { api, Child, errorMessage } from "@/lib/api";
+export const inputClass =
+  "w-full rounded-2xl border border-[var(--elara-borda)] bg-[var(--elara-input)] px-4 py-3 text-[var(--elara-texto)]";
+export function Shell({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="min-h-screen bg-[var(--elara-fundo)] text-[var(--elara-texto)] md:flex">
+      <Sidebar />
+      <main className="min-w-0 flex-1 pt-[68px] md:pt-0">
+        <div className="mx-auto max-w-[1450px] space-y-6 px-5 py-7 sm:px-7 lg:px-10 lg:py-10">
+          <header>
+            <p className="mb-3 text-xs font-extrabold uppercase tracking-widest text-[var(--elara-azul)]">
+              Meu espaço ELARA
+            </p>
+            <h1 className="text-3xl font-extrabold sm:text-4xl">{title}</h1>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--elara-texto-secundario)]">
+              {description}
+            </p>
+          </header>
+          {children}
+        </div>
+      </main>
+    </div>
+  );
+}
+export function Card({ children }: { children: ReactNode }) {
+  return (
+    <section className="space-y-4 rounded-[28px] border border-[var(--elara-borda)] bg-[var(--elara-superficie)] p-5 sm:p-7">
+      {children}
+    </section>
+  );
+}
+export function Button({
+  children,
+  onClick,
+  disabled,
+  type = "button",
+}: {
+  children: ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  type?: "button" | "submit";
+}) {
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className="rounded-full bg-[var(--elara-terracota)] px-5 py-3 text-sm font-bold text-white transition hover:opacity-90 disabled:cursor-wait disabled:opacity-50"
+    >
+      {children}
+    </button>
+  );
+}
+export function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <label className="block space-y-2 text-sm font-bold">
+      <span>{label}</span>
+      {children}
+    </label>
+  );
+}
+export function Feedback({
+  error,
+  busy,
+  success,
+  retry,
+}: {
+  error?: string;
+  busy?: boolean;
+  success?: string;
+  retry?: () => void;
+}) {
+  return (
+    <>
+      <div role="status" aria-live="polite">
+        {busy && <p>Carregando…</p>}
+        {success && (
+          <p className="rounded-2xl bg-[var(--elara-verde-suave)] p-4">
+            {success}
+          </p>
+        )}
+      </div>
+      {error && (
+        <div
+          role="alert"
+          className="rounded-2xl border border-red-300 bg-red-50 p-4 text-red-800"
+        >
+          {error}
+          {retry && (
+            <button type="button" className="ml-3 underline" onClick={retry}>
+              Tentar novamente
+            </button>
+          )}
+        </div>
+      )}
+    </>
+  );
+}
+export function useResource<T>(path: string | null) {
+  const [state, setState] = useState<{
+    path: string | null;
+    data: T | null;
+    error: string;
+    loading: boolean;
+    revision: number;
+  }>({ path, revision: 0, data: null, error: "", loading: !!path });
+  const [revision, setRevision] = useState(0);
+  const reload = useCallback(() => setRevision((n) => n + 1), []);
+  useEffect(() => {
+    if (!path) return;
+    let active = true;
+    const controller = new AbortController();
+    api<T>(path, { signal: controller.signal })
+      .then((data) => {
+        if (active)
+          setState({ path, revision, data, error: "", loading: false });
+      })
+      .catch((err) => {
+        if (active)
+          setState({
+            path,
+            revision,
+            data: null,
+            error: errorMessage(err),
+            loading: false,
+          });
+      });
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [path, revision]);
+  // A mudança de rota nunca exibe dados da criança anterior.
+  const valid = state.path === path && state.revision === revision;
+  return {
+    data: valid ? state.data : null,
+    error: valid ? state.error : "",
+    loading: !!path && (!valid || state.loading),
+    reload,
+  };
+}
+export function useChildren() {
+  const resource = useResource<Child[]>("/children");
+  const [selected, setSelected] = useState(0);
+  const children = resource.data ?? [];
+  const child = children.find((c) => c.idChildren === selected) ?? children[0];
+  return {
+    ...resource,
+    children,
+    child,
+    selected: child?.idChildren ?? 0,
+    setSelected,
+  };
+}
+export function ChildPicker({
+  childrenList,
+  selected,
+  onChange,
+}: {
+  childrenList: Child[];
+  selected: number;
+  onChange: (id: number) => void;
+}) {
+  return (
+    <Field label="Criança">
+      <select
+        className={inputClass}
+        value={selected}
+        onChange={(e) => onChange(Number(e.target.value))}
+      >
+        {!childrenList.length && (
+          <option value={0}>Cadastre uma criança para começar</option>
+        )}
+        {childrenList.map((c) => (
+          <option key={c.idChildren} value={c.idChildren}>
+            {c.name}
+          </option>
+        ))}
+      </select>
+    </Field>
+  );
+}
