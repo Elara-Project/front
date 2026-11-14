@@ -1,454 +1,363 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import Image from "next/image";
-import {
-  usePathname,
-  useRouter,
-} from "next/navigation";
-import {
-  useEffect,
-  useState,
-} from "react";
-
-type Usuario = {
-  nome?: string;
-  email?: string;
-};
+import Link from 'next/link';
+import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 const links = [
-  {
-    nome: "Início",
-    href: "/dashboard",
-    icone: "⌂",
-  },
-  {
-    nome: "Crianças",
-    href: "/crianca",
-    icone: "♡",
-  },
-  {
-    nome: "Agenda",
-    href: "/agenda",
-    icone: "◷",
-  },
-  {
-    nome: "Cuidados",
-    href: "/cuidados",
-    icone: "✚",
-  },
-  {
-    nome: "Conteúdos",
-    href: "/biblioteca",
-    icone: "▤",
-  },
-  {
-    nome: "Fórum",
-    href: "/forum",
-    icone: "◌",
-  },
+  { nome: 'Início', href: '/dashboard', icone: '⌂' },
+  { nome: 'Crianças', href: '/crianca', icone: '♡' },
+  { nome: 'Agenda', href: '/agenda', icone: '◷' },
+  { nome: 'Cuidados', href: '/cuidados', icone: '✚' },
+  { nome: 'Conteúdos', href: '/biblioteca', icone: '▤' },
+  { nome: 'Fórum', href: '/forum', icone: '◌' },
+  { nome: 'Assistente IA', href: '/ia', icone: '✦' },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const [menuAberto, setMenuAberto] =
-    useState(false);
+  const [menuAberto, setMenuAberto] = useState(false);
+  const [nome, setNome] = useState('Meu perfil');
 
-  const [usuario, setUsuario] =
-    useState<Usuario>({
-      nome: "Meu perfil",
-      email: "",
-    });
+  const abrirRef = useRef<HTMLButtonElement>(null);
+  const painelRef = useRef<HTMLElement>(null);
 
-  /*
-    Temporário.
-
-    Depois esse número será fornecido
-    pelo backend.
-  */
+  // Número demonstrativo até a integração com o servidor.
   const notificacoesNaoLidas = 3;
 
   useEffect(() => {
-    const usuarioSalvo =
-      localStorage.getItem(
-        "elara_usuario"
-      );
-
-    if (!usuarioSalvo) {
-      return;
-    }
-
     try {
-      const dados =
-        JSON.parse(usuarioSalvo);
+      const salvo = localStorage.getItem('elara_usuario');
+      if (!salvo) return;
 
-      setUsuario({
-        nome:
-          dados.nome ||
-          "Meu perfil",
+      const usuario = JSON.parse(salvo);
 
-        email:
-          dados.email || "",
-      });
+      if (typeof usuario?.nome === 'string' && usuario.nome.trim()) {
+        setNome(usuario.nome);
+      }
     } catch {
-      // Mantém os dados padrão.
+      // Mantém o nome padrão.
     }
   }, []);
 
-  function sair() {
-    localStorage.removeItem(
-      "elara_usuario"
-    );
+  useEffect(() => {
+    if (!menuAberto) return;
 
+    const overflowAnterior = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    function elementos() {
+      return Array.from(
+        painelRef.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled])'
+        ) ?? []
+      );
+    }
+
+    elementos()[0]?.focus();
+
+    function teclado(evento: KeyboardEvent) {
+      if (evento.key === 'Escape') {
+        setMenuAberto(false);
+        return;
+      }
+
+      if (evento.key !== 'Tab') return;
+
+      const lista = elementos();
+      const primeiro = lista[0];
+      const ultimo = lista[lista.length - 1];
+
+      if (!primeiro || !ultimo) return;
+
+      if (evento.shiftKey && document.activeElement === primeiro) {
+        evento.preventDefault();
+        ultimo.focus();
+      } else if (!evento.shiftKey && document.activeElement === ultimo) {
+        evento.preventDefault();
+        primeiro.focus();
+      }
+    }
+
+    const desktop = window.matchMedia('(min-width: 768px)');
+
+    function verificarTela() {
+      if (desktop.matches) setMenuAberto(false);
+    }
+
+    verificarTela();
+    desktop.addEventListener('change', verificarTela);
+    document.addEventListener('keydown', teclado);
+
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      desktop.removeEventListener('change', verificarTela);
+      document.removeEventListener('keydown', teclado);
+      abrirRef.current?.focus();
+    };
+  }, [menuAberto]);
+
+  function fecharMenu() {
     setMenuAberto(false);
-
-    router.push("/login");
   }
 
-  function linkAtivo(
-    href: string
-  ) {
-    return (
-      pathname === href ||
-      pathname.startsWith(
-        `${href}/`
-      )
-    );
+  function ativo(href: string) {
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
+
+  function sair() {
+    try {
+      localStorage.removeItem('elara_usuario');
+    } finally {
+      fecharMenu();
+      router.push('/login');
+    }
   }
 
   function abrirAcessibilidade() {
-    window.dispatchEvent(
-      new Event(
-        "abrir-acessibilidade"
-      )
-    );
-
-    setMenuAberto(false);
+    fecharMenu();
+    window.dispatchEvent(new Event('abrir-acessibilidade'));
   }
 
-  const conteudoSidebar = (
-    <>
-      {/* LOGO */}
+  function classeLink(href: string) {
+    return `flex min-h-12 items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-bold transition ${
+      ativo(href)
+        ? 'bg-[var(--elara-terracota-suave)] text-[var(--elara-terracota-texto)]'
+        : 'text-[var(--elara-texto-secundario)] hover:bg-[var(--elara-superficie-hover)]'
+    }`;
+  }
 
-      <div className="px-6 pb-7 pt-7">
-        <Link
-          href="/dashboard"
-          onClick={() =>
-            setMenuAberto(false)
-          }
-          className="block"
-        >
-          <div className="flex items-center gap-3">
+  function conteudo(mobile: boolean) {
+    return (
+      <>
+        <div className="flex shrink-0 items-center justify-between gap-3 px-5 py-5">
+          <Link
+            href="/dashboard"
+            onClick={fecharMenu}
+            aria-label="ELARA — início"
+          >
             <Image
               src="/logo-elara.png"
               alt="ELARA — Cuidando de quem cuida"
               width={190}
               height={150}
               priority
-              className="h-auto w-[150px] max-w-full object-contain"
+              className="h-auto w-[140px] max-w-full object-contain"
             />
-          </div>
-        </Link>
-      </div>
+          </Link>
 
-      {/* NAVEGAÇÃO */}
+          {mobile && (
+            <button
+              type="button"
+              onClick={fecharMenu}
+              aria-label="Fechar menu"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--elara-terracota-suave)] text-2xl text-[var(--elara-terracota-texto)]"
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+          )}
+        </div>
 
-      <div className="flex flex-1 flex-col overflow-y-auto px-4">
-        <p className="mb-3 px-3 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[var(--elara-texto-muito-suave)]">
-          Meu espaço
-        </p>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-5">
+          <p className="mb-3 px-3 text-xs font-extrabold uppercase tracking-widest text-[var(--elara-texto-suave)]">
+            Meu espaço
+          </p>
 
-        <nav className="space-y-1.5">
-          {links.map((link) => {
-            const ativo =
-              linkAtivo(link.href);
-
-            return (
+          <nav aria-label="Menu principal" className="space-y-1">
+            {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                onClick={() =>
-                  setMenuAberto(false)
-                }
-                className={`group flex items-center gap-3 rounded-[16px] px-3.5 py-3 text-sm font-bold transition ${
-                  ativo
-                    ? "bg-[var(--elara-terracota-suave)] text-[var(--elara-terracota-texto)]"
-                    : "text-[var(--elara-texto-secundario)] hover:bg-[var(--elara-superficie-hover)] hover:text-[var(--elara-texto)]"
-                }`}
+                onClick={fecharMenu}
+                aria-current={ativo(link.href) ? 'page' : undefined}
+                className={classeLink(link.href)}
               >
                 <span
-                  className={`flex h-8 w-8 items-center justify-center rounded-[11px] text-lg transition ${
-                    ativo
-                      ? "bg-[var(--elara-terracota)] text-white shadow-sm"
-                      : "bg-[var(--elara-superficie-hover)] text-[var(--elara-texto-secundario)]"
+                  aria-hidden="true"
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-lg ${
+                    ativo(link.href)
+                      ? 'bg-[var(--elara-terracota)] text-white'
+                      : 'bg-[var(--elara-superficie-hover)]'
                   }`}
                 >
                   {link.icone}
                 </span>
 
-                <span>
-                  {link.nome}
-                </span>
+                <span className="min-w-0 flex-1">{link.nome}</span>
 
-                {ativo && (
-                  <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--elara-terracota)]" />
+                {ativo(link.href) && (
+                  <span
+                    aria-hidden="true"
+                    className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--elara-terracota)]"
+                  />
                 )}
               </Link>
-            );
-          })}
-        </nav>
+            ))}
+          </nav>
 
-        {/* CONTA */}
-
-        <div className="mt-7">
-          <p className="mb-3 px-3 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[var(--elara-texto-muito-suave)]">
+          <p className="mb-3 mt-6 px-3 text-xs font-extrabold uppercase tracking-widest text-[var(--elara-texto-suave)]">
             Conta
           </p>
 
-          {/* NOTIFICAÇÕES */}
-
-          <Link
-            href="/notificacoes"
-            onClick={() =>
-              setMenuAberto(false)
-            }
-            className={`group flex items-center gap-3 rounded-[16px] px-3.5 py-3 text-sm font-bold transition ${
-              linkAtivo(
-                "/notificacoes"
-              )
-                ? "bg-[var(--elara-terracota-suave)] text-[var(--elara-terracota-texto)]"
-                : "text-[var(--elara-texto-secundario)] hover:bg-[var(--elara-superficie-hover)]"
-            }`}
-          >
-            <span
-              className={`relative flex h-8 w-8 items-center justify-center rounded-[11px] text-base ${
-                linkAtivo(
-                  "/notificacoes"
-                )
-                  ? "bg-[var(--elara-terracota)] text-white"
-                  : "bg-[var(--elara-amarelo-suave)] text-[var(--elara-amarelo-texto)]"
-              }`}
+          <nav aria-label="Menu da conta" className="space-y-1">
+            <Link
+              href="/notificacoes"
+              onClick={fecharMenu}
+              aria-current={ativo('/notificacoes') ? 'page' : undefined}
+              className={classeLink('/notificacoes')}
             >
-              ◇
+              <span
+                aria-hidden="true"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--elara-amarelo-suave)] text-lg text-[var(--elara-amarelo-texto)]"
+              >
+                ◇
+              </span>
 
-              {notificacoesNaoLidas >
-                0 && (
-                <span className="absolute -right-1.5 -top-1.5 flex h-[17px] min-w-[17px] items-center justify-center rounded-full border-2 border-[var(--elara-sidebar)] bg-[var(--elara-terracota)] px-1 text-[8px] font-black leading-none text-white">
-                  {notificacoesNaoLidas >
-                  9
-                    ? "9+"
-                    : notificacoesNaoLidas}
-                </span>
-              )}
-            </span>
+              <span className="flex-1">Notificações</span>
 
-            <span>
-              Notificações
-            </span>
+              <span className="rounded-full bg-[var(--elara-terracota-suave)] px-2 py-1 text-xs font-extrabold text-[var(--elara-terracota-texto)]">
+                <span className="sr-only">Não lidas: </span>
+                {notificacoesNaoLidas}
+              </span>
+            </Link>
 
-            {notificacoesNaoLidas >
-              0 &&
-              !linkAtivo(
-                "/notificacoes"
-              ) && (
-                <span className="ml-auto rounded-full bg-[var(--elara-terracota-suave)] px-2 py-0.5 text-[9px] font-black text-[var(--elara-terracota-texto)]">
-                  {
-                    notificacoesNaoLidas
-                  }
-                </span>
-              )}
-
-            {linkAtivo(
-              "/notificacoes"
-            ) && (
-              <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--elara-terracota)]" />
-            )}
-          </Link>
-
-          {/* PERFIL */}
-
-          <Link
-            href="/perfil"
-            onClick={() =>
-              setMenuAberto(false)
-            }
-            className={`group flex items-center gap-3 rounded-[16px] px-3.5 py-3 text-sm font-bold transition ${
-              linkAtivo("/perfil")
-                ? "bg-[var(--elara-azul-suave)] text-[var(--elara-azul-texto)]"
-                : "text-[var(--elara-texto-secundario)] hover:bg-[var(--elara-superficie-hover)]"
-            }`}
-          >
-            <span className="flex h-8 w-8 items-center justify-center rounded-[11px] bg-[var(--elara-azul-suave)] text-[var(--elara-azul-texto)]">
-              ♙
-            </span>
-
-            <span>
+            <Link
+              href="/perfil"
+              onClick={fecharMenu}
+              aria-current={ativo('/perfil') ? 'page' : undefined}
+              className={classeLink('/perfil')}
+            >
+              <span
+                aria-hidden="true"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--elara-azul-suave)] text-lg text-[var(--elara-azul-texto)]"
+              >
+                ♙
+              </span>
               Perfil
-            </span>
+            </Link>
 
-            {linkAtivo(
-              "/perfil"
-            ) && (
-              <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--elara-azul)]" />
-            )}
-          </Link>
+            <button
+              type="button"
+              onClick={abrirAcessibilidade}
+              className="flex min-h-12 w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left text-sm font-bold text-[var(--elara-texto-secundario)] transition hover:bg-[var(--elara-superficie-hover)]"
+            >
+              <span
+                aria-hidden="true"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--elara-verde-suave)] text-lg text-[var(--elara-verde-texto)]"
+              >
+                ♿
+              </span>
+              Acessibilidade
+            </button>
+          </nav>
 
-          {/* ACESSIBILIDADE */}
+          <div className="mt-6 rounded-[20px] border border-[var(--elara-borda)] bg-[var(--elara-sidebar-card)] p-3.5">
+            <Link
+              href="/perfil"
+              onClick={fecharMenu}
+              className="flex min-h-11 items-center gap-3"
+            >
+              <span
+                aria-hidden="true"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--elara-terracota)] text-sm font-extrabold uppercase text-white"
+              >
+                {nome.trim().charAt(0).toUpperCase() || 'U'}
+              </span>
 
-          <button
-            type="button"
-            onClick={
-              abrirAcessibilidade
-            }
-            className="group flex w-full items-center gap-3 rounded-[16px] px-3.5 py-3 text-left text-sm font-bold text-[var(--elara-texto-secundario)] transition hover:bg-[var(--elara-superficie-hover)]"
-          >
-            <span className="flex h-8 w-8 items-center justify-center rounded-[11px] bg-[var(--elara-verde-suave)] text-[var(--elara-verde-texto)]">
-              ♿
-            </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-extrabold text-[var(--elara-texto)]">
+                  {nome}
+                </p>
+                <p className="mt-1 text-xs text-[var(--elara-texto-suave)]">
+                  Ver meu perfil
+                </p>
+              </div>
 
-            Acessibilidade
-          </button>
+              <span aria-hidden="true">›</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={sair}
+              className="mt-3 min-h-11 w-full rounded-xl border border-[var(--elara-borda)] bg-[var(--elara-superficie)] px-3 py-2 text-sm font-bold text-[var(--elara-texto-secundario)] transition hover:border-[var(--elara-terracota)]"
+            >
+              Sair da conta
+            </button>
+          </div>
         </div>
-      </div>
-
-      {/* CARD DO PERFIL */}
-
-      <div className="m-4 rounded-[20px] border border-[var(--elara-borda)] bg-[var(--elara-sidebar-card)] p-3.5">
-        <Link
-          href="/perfil"
-          onClick={() =>
-            setMenuAberto(false)
-          }
-          className="flex items-center gap-3"
-        >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--elara-terracota)] text-sm font-extrabold uppercase text-white">
-            {usuario.nome
-              ?.charAt(0)
-              .toUpperCase() ||
-              "U"}
-          </div>
-
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-extrabold text-[var(--elara-texto)]">
-              {usuario.nome}
-            </p>
-
-            <p className="mt-0.5 truncate text-[10px] text-[var(--elara-texto-suave)]">
-              Meu perfil
-            </p>
-          </div>
-
-          <span className="text-[var(--elara-texto-suave)]">
-            ›
-          </span>
-        </Link>
-
-        <button
-          type="button"
-          onClick={sair}
-          className="mt-3 w-full rounded-[12px] border border-[var(--elara-borda)] bg-[var(--elara-superficie)] px-3 py-2 text-xs font-bold text-[var(--elara-texto-secundario)] transition hover:border-[var(--elara-terracota)] hover:text-[var(--elara-terracota)]"
-        >
-          Sair da conta
-        </button>
-      </div>
-    </>
-  );
+      </>
+    );
+  }
 
   return (
     <>
-      {/* CABEÇALHO MOBILE */}
-
-      <header className="fixed left-0 right-0 top-0 z-40 flex h-[68px] items-center justify-between border-b border-[var(--elara-borda)] bg-[var(--elara-sidebar)] px-5 md:hidden">
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-2.5"
-        >
+      <header className="fixed inset-x-0 top-0 z-40 flex h-[68px] items-center justify-between border-b border-[var(--elara-borda)] bg-[var(--elara-sidebar)] px-4 md:hidden">
+        <Link href="/dashboard" aria-label="ELARA — início">
           <Image
             src="/logo-elara.png"
-            alt="ELARA — Cuidando de quem cuida"
+            alt="ELARA"
             width={110}
             height={85}
             priority
-            className="h-auto w-[88px] object-contain"
+            className="h-auto max-h-14 w-[88px] object-contain"
           />
         </Link>
 
         <div className="flex items-center gap-2">
-          {/* NOTIFICAÇÕES MOBILE */}
-
           <Link
             href="/notificacoes"
-            aria-label="Notificações"
-            className="relative flex h-10 w-10 items-center justify-center rounded-[13px] bg-[var(--elara-amarelo-suave)] text-[var(--elara-amarelo-texto)]"
+            aria-label={`Notificações: ${notificacoesNaoLidas} não lidas`}
+            className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--elara-amarelo-suave)] text-xl text-[var(--elara-amarelo-texto)]"
           >
-            ◇
-
-            {notificacoesNaoLidas >
-              0 && (
-              <span className="absolute -right-1 -top-1 flex h-[17px] min-w-[17px] items-center justify-center rounded-full border-2 border-[var(--elara-sidebar)] bg-[var(--elara-terracota)] px-1 text-[8px] font-black text-white">
-                {notificacoesNaoLidas >
-                9
-                  ? "9+"
-                  : notificacoesNaoLidas}
-              </span>
-            )}
+            <span aria-hidden="true">◇</span>
+            <span
+              aria-hidden="true"
+              className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--elara-terracota)] px-1 text-[10px] font-extrabold text-white"
+            >
+              {notificacoesNaoLidas}
+            </span>
           </Link>
 
-          {/* MENU */}
-
           <button
+            ref={abrirRef}
             type="button"
-            aria-label={
-              menuAberto
-                ? "Fechar menu"
-                : "Abrir menu"
-            }
-            onClick={() =>
-              setMenuAberto(
-                (estado) =>
-                  !estado
-              )
-            }
-            className="flex h-10 w-10 items-center justify-center rounded-[13px] bg-[var(--elara-terracota-suave)] text-xl font-bold text-[var(--elara-terracota-texto)]"
+            aria-label="Abrir menu"
+            aria-expanded={menuAberto}
+            aria-controls={menuAberto ? 'menu-elara-mobile' : undefined}
+            onClick={() => setMenuAberto(true)}
+            className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--elara-terracota-suave)] text-2xl text-[var(--elara-terracota-texto)]"
           >
-            {menuAberto
-              ? "×"
-              : "☰"}
+            <span aria-hidden="true">☰</span>
           </button>
         </div>
       </header>
 
-      {/* OVERLAY */}
-
       {menuAberto && (
-        <button
-          type="button"
-          aria-label="Fechar menu"
-          onClick={() =>
-            setMenuAberto(false)
-          }
-          className="fixed inset-0 z-40 bg-[var(--elara-overlay)] backdrop-blur-[2px] md:hidden"
-        />
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div
+            aria-hidden="true"
+            onClick={fecharMenu}
+            className="absolute inset-0 bg-[var(--elara-overlay)] backdrop-blur-[2px]"
+          />
+
+          <aside
+            ref={painelRef}
+            id="menu-elara-mobile"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu do ELARA"
+            className="relative flex h-dvh w-[285px] max-w-[85vw] flex-col overflow-hidden border-r border-[var(--elara-borda)] bg-[var(--elara-sidebar)] pb-[env(safe-area-inset-bottom)] shadow-2xl"
+          >
+            {conteudo(true)}
+          </aside>
+        </div>
       )}
 
-      {/* SIDEBAR MOBILE */}
-
-      <aside
-        className={`fixed bottom-0 left-0 top-0 z-50 flex w-[285px] flex-col border-r border-[var(--elara-borda)] bg-[var(--elara-sidebar)] shadow-2xl transition-transform duration-300 md:hidden ${
-          menuAberto
-            ? "translate-x-0"
-            : "-translate-x-full"
-        }`}
-      >
-        {conteudoSidebar}
-      </aside>
-
-      {/* SIDEBAR DESKTOP */}
-
-      <aside className="sticky top-0 hidden h-screen w-[250px] shrink-0 flex-col border-r border-[var(--elara-borda)] bg-[var(--elara-sidebar)] md:flex">
-        {conteudoSidebar}
+      <aside className="sticky top-0 hidden h-dvh w-[250px] shrink-0 flex-col overflow-hidden border-r border-[var(--elara-borda)] bg-[var(--elara-sidebar)] md:flex">
+        {conteudo(false)}
       </aside>
     </>
   );
