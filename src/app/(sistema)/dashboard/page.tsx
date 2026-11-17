@@ -56,16 +56,16 @@ const shortcuts: {
 // CARROSSEL DE ANÚNCIOS
 const anuncios = [
   {
-    imagem: "/anuncios/anuncio1.png",
-    titulo: "ELARA: Ao seu lado em cada cuidado",
+    imagem: "/banner-principal.png",
+    titulo: "Anuncie no ELARA",
   },
   {
-    imagem: "/anuncios/anuncio2.png",
-    titulo: "Anuncie aqui",
+    imagem: "/banner-terapia.png",
+    titulo: "Apoio e cuidado",
   },
   {
-    imagem: "/anuncios/anuncio3.png",
-    titulo: "Informação que acolhe",
+    imagem: "/banner-atividades.png",
+    titulo: "Atividades e desenvolvimento",
   },
 ];
 
