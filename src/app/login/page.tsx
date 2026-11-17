@@ -3,6 +3,7 @@
 import { api, saveUser, User } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
+import Icon from "@/components/Icon";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -17,6 +18,8 @@ export default function LoginPage() {
 
   async function fazerLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (carregando) return;
+
     setErro("");
 
     const emailLimpo = email.trim().toLowerCase();
@@ -46,12 +49,17 @@ export default function LoginPage() {
           body: JSON.stringify({ email: emailLimpo, senha }),
         },
       );
-      if (!dados.accessToken || !dados.user?.idUser)
+
+      if (!dados.accessToken || !dados.user?.idUser) {
         throw new Error("Resposta de login inválida.");
+      }
+
       sessionStorage.setItem("elara_access_token", dados.accessToken);
       saveUser(dados.user);
-      router.replace(dados.user.role === "admin" ? "/admin" : "/dashboard");
 
+      router.replace(
+        dados.user.role === "admin" ? "/admin" : "/dashboard",
+      );
       router.refresh();
     } catch (error) {
       if (error instanceof TypeError) {
@@ -60,7 +68,9 @@ export default function LoginPage() {
         );
       } else {
         setErro(
-          error instanceof Error ? error.message : "Ocorreu um erro ao entrar.",
+          error instanceof Error
+            ? error.message
+            : "Ocorreu um erro ao entrar.",
         );
       }
     } finally {
@@ -69,150 +79,107 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F8F5F1] text-[#2C3E44] lg:grid lg:grid-cols-[1.05fr_0.95fr]">
-      {/* LADO VISUAL */}
-
-      <section className="relative hidden min-h-screen overflow-hidden bg-[#E7F0F4] p-10 lg:flex lg:flex-col lg:justify-between xl:p-14">
-        <div className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-white/40" />
-
-        <div className="pointer-events-none absolute -bottom-32 -right-24 h-[430px] w-[430px] rounded-full border-[70px] border-white/30" />
-
-        <div className="pointer-events-none absolute right-[12%] top-[22%] h-28 w-28 rounded-full bg-[#F3D8D0]/70" />
-
-        {/* LOGO DESKTOP */}
-
-        <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center">
-            <Image
-              src="/logo-elara.png"
-              alt="ELARA - Cuidando de Quem Cuida"
-              width={180}
-              height={100}
-              priority
-              className="h-auto w-[160px] object-contain"
-            />
-          </Link>
-        </div>
-
-        {/* APRESENTAÇÃO */}
-
-        <div className="relative z-10 max-w-xl">
-          <div className="mb-5 flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[#D97D64]" />
-
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#678B9C]">
-              Seu espaço de cuidado
-            </p>
-          </div>
-
-          <h1 className="max-w-lg text-5xl font-extrabold leading-[1.08] tracking-[-0.055em] text-[#34474E] xl:text-6xl">
-            Organizar também é uma forma de{" "}
-            <span className="text-[#D97D64]">cuidar.</span>
-          </h1>
-
-          <p className="mt-6 max-w-lg text-base leading-7 text-[#637980]">
-            Reúna informações importantes, compromissos, cuidados e conteúdos
-            para tornar a rotina da sua família mais organizada.
-          </p>
-
-          {/* MINI CARDS */}
-
-          <div className="mt-10 grid max-w-lg grid-cols-3 gap-3">
-            <div className="rounded-[22px] border border-white/70 bg-white/60 p-4 backdrop-blur-sm">
-              <span className="flex h-9 w-9 items-center justify-center rounded-[12px] bg-[#F7E4DF] text-[#C46852]">
-                ◷
-              </span>
-
-              <p className="mt-4 text-xs font-extrabold text-[#4F656D]">
-                Rotina
-              </p>
-            </div>
-
-            <div className="rounded-[22px] border border-white/70 bg-white/60 p-4 backdrop-blur-sm">
-              <span className="flex h-9 w-9 items-center justify-center rounded-[12px] bg-[#EDF5ED] text-[#6B986B]">
-                ♡
-              </span>
-
-              <p className="mt-4 text-xs font-extrabold text-[#4F656D]">
-                Cuidados
-              </p>
-            </div>
-
-            <div className="rounded-[22px] border border-white/70 bg-white/60 p-4 backdrop-blur-sm">
-              <span className="flex h-9 w-9 items-center justify-center rounded-[12px] bg-[#E7F0F4] text-[#678FA2]">
-                ▤
-              </span>
-
-              <p className="mt-4 text-xs font-extrabold text-[#4F656D]">
-                Conteúdos
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="relative z-10">
-          <p className="text-xs font-semibold text-[#789099]">
-            ELARA • Informação, organização e acolhimento.
-          </p>
-        </div>
-      </section>
-
-      {/* ÁREA DE LOGIN */}
-
-      <section className="relative flex min-h-screen items-center justify-center px-5 py-8 sm:px-8 lg:bg-[#FDFBF7] lg:px-12">
-        {/* LOGO MOBILE */}
-
-        <Link
-          href="/"
-          className="absolute left-5 top-5 flex items-center lg:hidden"
-        >
+    <main className="login-page">
+      <header className="login-header">
+        <Link href="/" aria-label="ELARA — Página inicial">
           <Image
             src="/logo-elara.png"
-            alt="ELARA - Página inicial"
-            width={145}
+            alt="ELARA"
+            width={160}
             height={80}
             priority
-            className="h-auto w-[125px] object-contain"
+            className="login-logo"
           />
         </Link>
 
-        <div className="w-full max-w-[460px] pt-16 lg:pt-0">
-          {/* CABEÇALHO */}
+        <Link href="/" className="login-back">
+          <span aria-hidden="true">←</span>
+          Voltar para o início
+        </Link>
+      </header>
 
+      <div className="login-layout">
+        <section className="login-presentation">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#7FA2B8]">
-              Bem-vindo de volta
-            </p>
+            <p className="login-label">AO SEU LADO EM CADA CUIDADO</p>
 
-            <h2 className="mt-3 text-3xl font-extrabold tracking-[-0.04em] sm:text-4xl">
-              Entre no seu espaço
-            </h2>
+            <h1>
+              Sua rotina,
+              <br />
+              com mais espaço
+              <br />
+              para <span>você.</span>
+            </h1>
 
-            <p className="mt-3 text-sm leading-6 text-[#718187]">
-              Acesse sua conta para continuar organizando sua rotina no ELARA.
+            <p className="login-intro">
+              Reúna informações, organize os compromissos e acompanhe
+              os cuidados da sua família em um só lugar.
             </p>
           </div>
 
-          {/* FORMULÁRIO */}
+          <div className="login-benefits">
+            <div className="login-benefit">
+              <span className="login-icon">
+                <Icon name="calendar" size={20} />
+              </span>
 
-          <form onSubmit={fazerLogin} className="mt-8">
-            {/* EMAIL */}
+              <div>
+                <h2>Organize o que importa</h2>
+                <p>Consultas, terapias e compromissos na sua agenda.</p>
+              </div>
+            </div>
 
-            <div>
-              <label
-                htmlFor="email"
-                className="mb-2 block text-sm font-extrabold text-[#465B62]"
-              >
-                E-mail
-              </label>
+            <div className="login-benefit">
+              <span className="login-icon">
+                <Icon name="care" size={20} />
+              </span>
 
-              <div className="relative">
-                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#8DA0A7]">
-                  @
-                </span>
+              <div>
+                <h2>Acompanhe cada cuidado</h2>
+                <p>Informações importantes sempre ao seu alcance.</p>
+              </div>
+            </div>
+
+            <div className="login-benefit">
+              <span className="login-icon">
+                <Icon name="forum" size={20} />
+              </span>
+
+              <div>
+                <h2>Encontre apoio</h2>
+                <p>Um espaço para compartilhar e aprender.</p>
+              </div>
+            </div>
+          </div>
+
+          <p className="login-note">
+            Um passo de cada vez, no seu tempo.
+          </p>
+        </section>
+
+        <section className="login-form-area" aria-labelledby="login-title">
+          <div className="login-card">
+            <div className="login-card-heading">
+              <p className="login-label">BEM-VINDO DE VOLTA</p>
+              <h2 id="login-title">Entre no seu espaço.</h2>
+
+              <p>
+                Acesse sua conta para continuar organizando sua rotina
+                no ELARA.
+              </p>
+            </div>
+
+            <form
+              onSubmit={fazerLogin}
+              className="login-form"
+              aria-busy={carregando}
+            >
+              <div className="login-field">
+                <label htmlFor="email">E-mail</label>
 
                 <input
                   id="email"
+                  name="email"
                   type="email"
                   required
                   value={email}
@@ -222,153 +189,570 @@ export default function LoginPage() {
                   }}
                   placeholder="seuemail@exemplo.com"
                   autoComplete="email"
-                  className="w-full rounded-[17px] border border-[#DED8D2] bg-white py-3.5 pl-11 pr-4 text-sm font-semibold outline-none transition placeholder:font-normal placeholder:text-[#A6AFB2] focus:border-[#7FA2B8] focus:ring-4 focus:ring-[#7FA2B8]/10"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  aria-describedby={erro ? "login-error" : undefined}
                 />
               </div>
-            </div>
 
-            {/* SENHA */}
+              <div className="login-field">
+                <div className="login-field-heading">
+                  <label htmlFor="senha">Senha</label>
 
-            <div className="mt-5">
-              <div className="mb-2 flex items-center justify-between gap-3">
-                <label
-                  htmlFor="senha"
-                  className="text-sm font-extrabold text-[#465B62]"
-                >
-                  Senha
-                </label>
+                  <button
+                    type="button"
+                    className="login-text-button"
+                    onClick={() =>
+                      alert(
+                        "A recuperação de senha será disponibilizada quando o backend estiver integrado.",
+                      )
+                    }
+                  >
+                    Esqueci minha senha
+                  </button>
+                </div>
 
-                <button
-                  type="button"
-                  className="text-xs font-extrabold text-[#7FA2B8] transition hover:text-[#D97D64]"
-                  onClick={() =>
-                    alert(
-                      "A recuperação de senha será disponibilizada quando o backend estiver integrado.",
-                    )
-                  }
-                >
-                  Esqueci minha senha
-                </button>
-              </div>
+                <div className="login-password">
+                  <input
+                    id="senha"
+                    name="senha"
+                    type={mostrarSenha ? "text" : "password"}
+                    required
+                    value={senha}
+                    onChange={(event) => {
+                      setSenha(event.target.value);
+                      setErro("");
+                    }}
+                    placeholder="Digite sua senha"
+                    autoComplete="current-password"
+                    aria-describedby={erro ? "login-error" : undefined}
+                  />
 
-              <div className="relative">
-                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#8DA0A7]">
-                  ●
-                </span>
-
-                <input
-                  id="senha"
-                  type={mostrarSenha ? "text" : "password"}
-                  required
-                  value={senha}
-                  onChange={(event) => {
-                    setSenha(event.target.value);
-                    setErro("");
-                  }}
-                  placeholder="Digite sua senha"
-                  autoComplete="current-password"
-                  className="w-full rounded-[17px] border border-[#DED8D2] bg-white py-3.5 pl-11 pr-20 text-sm font-semibold outline-none transition placeholder:font-normal placeholder:text-[#A6AFB2] focus:border-[#7FA2B8] focus:ring-4 focus:ring-[#7FA2B8]/10"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setMostrarSenha((estado) => !estado)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-extrabold text-[#71858D] transition hover:text-[#D97D64]"
-                  aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
-                >
-                  {mostrarSenha ? "OCULTAR" : "MOSTRAR"}
-                </button>
-              </div>
-            </div>
-
-            {/* MENSAGEM DE ERRO */}
-
-            {erro && (
-              <div
-                role="alert"
-                className="mt-5 flex gap-3 rounded-[18px] border border-[#F1D0C7] bg-[#FFF4F1] p-4"
-              >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F7E4DF] text-xs font-black text-[#C66650]">
-                  !
-                </span>
-
-                <div>
-                  <p className="text-xs font-extrabold text-[#B95F49]">
-                    Não foi possível entrar
-                  </p>
-
-                  <p className="mt-1 text-xs leading-5 text-[#876F69]">
-                    {erro}
-                  </p>
+                  <button
+                    type="button"
+                    className="login-password-toggle"
+                    onClick={() => setMostrarSenha((estado) => !estado)}
+                    aria-label={
+                      mostrarSenha ? "Ocultar senha" : "Mostrar senha"
+                    }
+                    aria-pressed={mostrarSenha}
+                    aria-controls="senha"
+                  >
+                    {mostrarSenha ? "Ocultar" : "Mostrar"}
+                  </button>
                 </div>
               </div>
-            )}
 
-            {/* BOTÃO ENTRAR */}
+              {erro && (
+                <div id="login-error" role="alert" className="login-error">
+                  <strong>Não foi possível entrar</strong>
+                  <p>{erro}</p>
+                </div>
+              )}
 
-            <button
-              type="submit"
-              disabled={carregando}
-              className="mt-6 flex w-full items-center justify-center rounded-full bg-[#D97D64] px-6 py-3.5 text-sm font-extrabold text-white shadow-[0_8px_25px_rgba(217,125,100,0.22)] transition hover:-translate-y-0.5 hover:bg-[#CA7059] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {carregando ? "Entrando..." : "Entrar na minha conta →"}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={carregando}
+                className="login-button login-button-primary"
+              >
+                {carregando ? "Entrando..." : "Entrar na minha conta"}
+                {!carregando && <Icon name="arrow" size={17} />}
+              </button>
+            </form>
 
-          {/* DIVISOR */}
-
-          <div className="my-7 flex items-center gap-4">
-            <div className="h-px flex-1 bg-[#E8E2DC]" />
-
-            <span className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#A0AAAD]">
-              Novo por aqui?
-            </span>
-
-            <div className="h-px flex-1 bg-[#E8E2DC]" />
-          </div>
-
-          {/* CADASTRO */}
-
-          <Link
-            href="/cadastro"
-            className="flex w-full items-center justify-center rounded-full border border-[#D7E3E8] bg-[#F5F9FA] px-6 py-3.5 text-sm font-extrabold text-[#668B9D] transition hover:border-[#7FA2B8] hover:bg-[#E7F0F4]"
-          >
-            Criar minha conta
-          </Link>
-
-          {/* VOLTAR AO INÍCIO */}
-
-          <div className="mt-7 text-center">
-            <Link
-              href="/"
-              className="inline-block rounded-lg px-3 py-2 text-xs font-bold text-[#89969A] transition hover:text-[#D97D64]"
-            >
-              ← Voltar para o início
-            </Link>
-          </div>
-
-          {/* INFORMAÇÕES */}
-
-          <div className="mt-8 rounded-[18px] border border-[#DCE8DC] bg-[#F3F8F3] p-4">
-            <div className="flex gap-3">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[11px] bg-white text-xs font-black text-[#719971]">
-                ✓
-              </span>
-
-              <div>
-                <p className="text-xs font-extrabold text-[#587258]">
-                  Seu espaço no ELARA
-                </p>
-
-                <p className="mt-1 text-[11px] leading-5 text-[#748576]">
-                  A autenticação será realizada pela API do ELARA. Nenhuma senha
-                  será validada ou armazenada no navegador.
-                </p>
-              </div>
+            <div className="login-divider">
+              <span>Novo por aqui?</span>
             </div>
+
+            <Link
+              href="/cadastro"
+              className="login-button login-button-secondary"
+            >
+              Criar minha conta
+              <Icon name="arrow" size={17} />
+            </Link>
+
+            <p className="login-card-note">
+              Organização, informação e apoio para quem cuida.
+            </p>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
+
+      <footer className="login-footer">
+        <p>
+          <strong>ELARA</strong>
+          <span>Ao seu lado em cada cuidado.</span>
+        </p>
+
+        <a href="mailto:elarasac@gmail.com">elarasac@gmail.com</a>
+      </footer>
+
+      <style jsx>{`
+        .login-page {
+          --login-bg: var(--elara-offwhite, #faf8f5);
+          --login-surface: var(--elara-superficie, #ffffff);
+          --login-text: var(--elara-texto, #34474e);
+          --login-muted: var(--elara-texto-secundario, #687578);
+          --login-border: var(--elara-borda, #e6e4df);
+          --login-action: var(--elara-terracota, #d97d64);
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          background: var(--login-bg);
+          color: var(--login-text);
+          font-family: inherit;
+        }
+
+        .login-page,
+        .login-page * {
+          box-sizing: border-box;
+        }
+
+        .login-page :global(a) {
+          text-decoration: none;
+        }
+
+        .login-page :global(a:focus-visible),
+        .login-page button:focus-visible {
+          outline: 3px solid var(--login-action);
+          outline-offset: 4px;
+        }
+
+        .login-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 24px;
+          min-height: 96px;
+          padding: 12px max(32px, calc((100% - 1160px) / 2));
+          border-bottom: 1px solid var(--login-border);
+          background: var(--login-surface);
+        }
+
+        .login-header :global(.login-logo) {
+          display: block;
+          width: 125px;
+          height: auto;
+        }
+
+        .login-header :global(.login-back) {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          min-height: 44px;
+          color: var(--login-muted);
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+        .login-header :global(.login-back:hover) {
+          color: var(--login-action);
+        }
+
+        .login-layout {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          align-items: center;
+          gap: 90px;
+          width: min(1080px, calc(100% - 64px));
+          margin: auto;
+          padding-block: 64px;
+          flex: 1;
+        }
+
+        .login-presentation {
+          min-width: 0;
+        }
+
+        .login-label {
+          margin: 0 0 16px;
+          color: var(--login-muted);
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.13em;
+          line-height: 1.7;
+        }
+
+        .login-presentation h1 {
+          margin: 0;
+          font-size: clamp(38px, 4vw, 54px);
+          font-weight: 800;
+          line-height: 1.15;
+          letter-spacing: -0.045em;
+        }
+
+        .login-presentation h1 span {
+          color: var(--login-action);
+        }
+
+        .login-intro {
+          max-width: 420px;
+          margin: 24px 0 0;
+          color: var(--login-muted);
+          font-size: 14px;
+          line-height: 1.9;
+        }
+
+        .login-benefits {
+          margin-top: 32px;
+          border-top: 1px solid var(--login-border);
+        }
+
+        .login-benefit {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding-block: 19px;
+          border-bottom: 1px solid var(--login-border);
+        }
+
+        .login-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          width: 42px;
+          height: 42px;
+          border: 1px solid var(--login-border);
+          border-radius: 9px;
+          background: var(--login-surface);
+          color: var(--login-action);
+        }
+
+        .login-benefit h2 {
+          margin: 0 0 5px;
+          font-size: 13px;
+          font-weight: 700;
+        }
+
+        .login-benefit p {
+          margin: 0;
+          color: var(--login-muted);
+          font-size: 12px;
+          line-height: 1.7;
+        }
+
+        .login-note {
+          margin: 24px 0 0;
+          color: var(--login-muted);
+          font-size: 12px;
+          line-height: 1.7;
+        }
+
+        .login-form-area {
+          min-width: 0;
+        }
+
+        .login-card {
+          padding: 36px;
+          border: 1px solid var(--login-border);
+          border-radius: 14px;
+          background: var(--login-surface);
+        }
+
+        .login-card-heading .login-label {
+          margin-bottom: 12px;
+        }
+
+        .login-card-heading h2 {
+          margin: 0;
+          font-size: 30px;
+          line-height: 1.2;
+          font-weight: 800;
+          letter-spacing: -0.035em;
+        }
+
+        .login-card-heading > p:last-child {
+          margin: 14px 0 0;
+          color: var(--login-muted);
+          font-size: 13px;
+          line-height: 1.8;
+        }
+
+        .login-form {
+          margin-top: 30px;
+        }
+
+        .login-field + .login-field {
+          margin-top: 20px;
+        }
+
+        .login-field label {
+          display: block;
+          color: var(--login-text);
+          font-size: 12px;
+          font-weight: 700;
+          line-height: 1.6;
+        }
+
+        .login-field > label {
+          margin-bottom: 9px;
+        }
+
+        .login-field-heading {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 9px;
+        }
+
+        .login-field input {
+          display: block;
+          width: 100%;
+          min-height: 48px;
+          padding: 13px 14px;
+          border: 1px solid var(--login-border);
+          border-radius: 8px;
+          background: var(--login-surface);
+          color: var(--login-text);
+          font-family: inherit;
+          font-size: 14px;
+          line-height: 1.5;
+        }
+
+        .login-field input::placeholder {
+          color: var(--login-muted);
+          opacity: 0.8;
+        }
+
+        .login-field input:focus {
+          outline: 2px solid var(--login-action);
+          outline-offset: 2px;
+          border-color: var(--login-action);
+        }
+
+        .login-text-button {
+          padding: 4px 0;
+          border: 0;
+          background: transparent;
+          color: var(--login-muted);
+          font-family: inherit;
+          font-size: 11px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        .login-text-button:hover {
+          color: var(--login-action);
+        }
+
+        .login-password {
+          position: relative;
+        }
+
+        .login-password input {
+          padding-right: 88px;
+        }
+
+        .login-password-toggle {
+          position: absolute;
+          right: 7px;
+          top: 50%;
+          transform: translateY(-50%);
+          min-height: 40px;
+          padding: 0 9px;
+          border: 0;
+          border-radius: 5px;
+          background: transparent;
+          color: var(--login-muted);
+          font-family: inherit;
+          font-size: 11px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+
+        .login-password-toggle:hover {
+          color: var(--login-action);
+        }
+
+        .login-button,
+        .login-card :global(.login-button) {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          width: 100%;
+          min-height: 48px;
+          padding: 13px 18px;
+          border: 1px solid transparent;
+          border-radius: 8px;
+          font-family: inherit;
+          font-size: 13px;
+          font-weight: 700;
+          line-height: 1.5;
+          cursor: pointer;
+          transition: background-color 150ms;
+        }
+
+        .login-button-primary {
+          margin-top: 26px;
+          background: var(--login-action);
+          color: #fff;
+        }
+
+        .login-button-primary:hover:not(:disabled) {
+          background: #c96f57;
+        }
+
+        .login-button-primary:disabled {
+          cursor: wait;
+          opacity: 0.65;
+        }
+
+        .login-card :global(.login-button-secondary) {
+          border-color: var(--login-border);
+          background: var(--login-surface);
+          color: var(--login-text);
+        }
+
+        .login-card :global(.login-button-secondary:hover) {
+          background: var(--login-bg);
+        }
+
+        .login-error {
+          margin-top: 20px;
+          padding: 14px;
+          border: 1px solid #edc6bb;
+          border-radius: 8px;
+          background: #fff4f0;
+          color: #8c3c2c;
+          overflow-wrap: anywhere;
+        }
+
+        .login-error strong {
+          font-size: 12px;
+        }
+
+        .login-error p {
+          margin: 6px 0 0;
+          font-size: 12px;
+          line-height: 1.7;
+        }
+
+        .login-divider {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-block: 26px;
+          color: var(--login-muted);
+          font-size: 11px;
+        }
+
+        .login-divider::before,
+        .login-divider::after {
+          content: "";
+          flex: 1;
+          height: 1px;
+          background: var(--login-border);
+        }
+
+        .login-card-note {
+          margin: 24px 0 0;
+          text-align: center;
+          color: var(--login-muted);
+          font-size: 11px;
+          line-height: 1.8;
+        }
+
+        .login-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+          padding: 24px max(32px, calc((100% - 1160px) / 2));
+          border-top: 1px solid var(--login-border);
+          background: var(--login-surface);
+        }
+
+        .login-footer p {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 14px;
+          margin: 0;
+          font-size: 12px;
+          line-height: 1.7;
+        }
+
+        .login-footer strong {
+          letter-spacing: 0.09em;
+        }
+
+        .login-footer span,
+        .login-footer a {
+          color: var(--login-muted);
+          font-size: 12px;
+        }
+
+        @media (max-width: 900px) {
+          .login-layout {
+            gap: 36px;
+          }
+
+          .login-card {
+            padding: 28px;
+          }
+
+          .login-presentation h1 {
+            font-size: 40px;
+          }
+        }
+
+        @media (max-width: 700px) {
+          .login-header {
+            min-height: 80px;
+            padding: 12px 20px;
+            gap: 16px;
+          }
+
+          .login-header :global(.login-logo) {
+            width: 105px;
+          }
+
+          .login-header :global(.login-back) {
+            font-size: 11px;
+          }
+
+          .login-layout {
+            grid-template-columns: 1fr;
+            width: min(460px, calc(100% - 36px));
+            padding-block: 36px;
+            gap: 0;
+          }
+
+          .login-presentation {
+            display: none;
+          }
+
+          .login-card {
+            padding: 28px 24px;
+          }
+
+          .login-card-heading h2 {
+            font-size: 28px;
+          }
+
+          .login-field input {
+            font-size: 16px;
+          }
+
+          .login-footer {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 12px;
+            padding: 22px 20px;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .login-button,
+          .login-card :global(.login-button) {
+            transition: none;
+          }
+        }
+      `}</style>
     </main>
   );
 }
