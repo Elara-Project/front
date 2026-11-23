@@ -27,6 +27,7 @@ export type Clinical = {
   therapyIds?: number[];
   allergiesIdAllergies?: number | null;
   allergiesIds?: number[];
+  allergiesText?: string | null;
 };
 export type Appointment = {
   idAppointments: number;

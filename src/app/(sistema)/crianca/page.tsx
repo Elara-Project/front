@@ -165,6 +165,7 @@ function ClinicalForm({
   const [allergiesSelected, setAllergiesSelected] = useState<number[]>(
     clinical?.allergiesIds ?? (clinical?.allergiesIdAllergies ? [clinical.allergiesIdAllergies] : []),
   );
+  const [allergiesText, setAllergiesText] = useState(clinical?.allergiesText ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -185,6 +186,7 @@ function ClinicalForm({
           observations: observations.trim(),
           therapyIds: therapiesSelected,
           allergiesIds: allergiesSelected,
+          allergiesText: allergiesText.trim(),
         },
       );
       setSuccess("Prontuário salvo.");
@@ -242,7 +244,7 @@ function ClinicalForm({
             )}
           </div>
         </Field>
-        <Field label="Alergias (selecione todas as aplicáveis)">
+        <Field label="Alergias comuns (selecione as aplicáveis)">
           <div className="grid gap-2 sm:grid-cols-2">
             {allergies.data?.map((a) => (
               <label key={a.idAllergies} className="flex items-center gap-2 text-sm">
@@ -257,6 +259,15 @@ function ClinicalForm({
               </label>
             ))}
           </div>
+        </Field>
+        <Field label="Outras alergias (digite os nomes separados por vírgula)">
+          <textarea
+            maxLength={1000}
+            className={inputClass}
+            value={allergiesText}
+            onChange={(e) => setAllergiesText(e.target.value)}
+            placeholder="Ex.: ovo, dipirona, camarão, corante alimentar"
+          />
         </Field>
         <div className="elara-form-footer">
           <Feedback error={error} success={success} />
