@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { Appointment, errorMessage, localDateTime, send } from "@/lib/api";
+import { api, Appointment, Calendar, errorMessage, localDateTime, send } from "@/lib/api";
 import {
   ChildPicker,
   Feedback,
@@ -41,6 +41,7 @@ export default function AgendaPage() {
   const [horario, setHorario] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [tipo, setTipo] = useState("Compromisso");
+  const [lembreteAtivo, setLembreteAtivo] = useState(false);
   const [mesAtual, setMesAtual] = useState(new Date().getMonth());
   const [anoAtual, setAnoAtual] = useState(new Date().getFullYear());
   const [diaSelecionado, setDiaSelecionado] = useState<number | null>(null);
@@ -83,6 +84,7 @@ export default function AgendaPage() {
     setHorario("");
     setObservacoes("");
     setTipo("Compromisso");
+    setLembreteAtivo(false);
     setIdEditando(null);
   }
   function abrirNovoCompromisso() {
@@ -124,7 +126,7 @@ export default function AgendaPage() {
     }
     setBusy(true);
     try {
-      await send(
+      const savedAppointment = await send<Appointment>(
         idEditando !== null
           ? `/appointments/${idEditando}`
           : `/children/${selected}/appointments`,
@@ -136,8 +138,26 @@ export default function AgendaPage() {
           notes: observacoes,
         },
       );
+      let reminderError = "";
+      if (lembreteAtivo && idEditando === null) {
+        try {
+          const calendars = await api<Calendar[]>("/calendar");
+          const calendarItem = calendars.find((item) => item.appointmentsIdAppointments === savedAppointment.idAppointments);
+          if (!calendarItem) throw new Error("Não localizei o compromisso na agenda para criar o lembrete.");
+          const scheduled = new Date(savedAppointment.appointmentDateTime).getTime() - 30 * 60 * 1000;
+          const notifyDate = new Date(Math.max(scheduled, Date.now())).toISOString();
+          await send("/notify", "POST", {
+            calendarIdCalendar: calendarItem.idCalendar,
+            notifyDate,
+            descript: `Lembrete: ${titulo.trim()}`.slice(0, 45),
+          });
+        } catch (err) {
+          reminderError = `Compromisso salvo, mas o lembrete não foi agendado: ${errorMessage(err)}`;
+        }
+      }
       appointments.reload();
       fecharFormulario();
+      if (reminderError) setError(reminderError);
     } catch (err) {
       setError(errorMessage(err));
     } finally {
@@ -465,6 +485,12 @@ export default function AgendaPage() {
                     className="w-full resize-none rounded-lg border border-[var(--elara-borda-forte)] bg-[var(--elara-input)] px-4 py-3.5 text-sm leading-6 outline-none transition placeholder:text-[var(--elara-placeholder)] focus:border-[#D97D64] focus:bg-[var(--elara-superficie)]"
                   />
                 </div>
+                {idEditando === null && (
+                  <label className="mt-5 flex items-start gap-3 text-sm text-[#465B62]">
+                    <input type="checkbox" checked={lembreteAtivo} onChange={(e) => setLembreteAtivo(e.target.checked)} />
+                    <span>Enviar lembrete por e-mail 30 minutos antes. Para compromissos próximos, envio assim que possível.</span>
+                  </label>
+                )}
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                   <button
                     type="button"

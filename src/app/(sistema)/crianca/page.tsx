@@ -34,7 +34,11 @@ function ChildForm({
   const [relationship, setRelationship] = useState(
     child?.relationshipIdRelationship ?? 0,
   );
-  const [diagnosis, setDiagnosis] = useState(child?.diagnosesIdDiagnoses ?? 0);
+  const [diagnosesSelected, setDiagnosesSelected] = useState<number[]>(
+    child?.diagnosesIds ?? (child?.diagnosesIdDiagnoses ? [child.diagnosesIdDiagnoses] : []),
+  );
+  const [school, setSchool] = useState(child?.school ?? "");
+  const [cid, setCid] = useState(child?.cid ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function save(e: FormEvent) {
@@ -47,7 +51,9 @@ function ChildForm({
         name: name.trim(),
         dob,
         relationshipIdRelationship: relationship,
-        ...(diagnosis ? { diagnosesIdDiagnoses: diagnosis } : {}),
+        diagnosesIds: diagnosesSelected,
+        school: school.trim(),
+        cid: cid.trim(),
       };
       const result = await send<Child>(
         child ? `/children/${child.idChildren}` : "/children",
@@ -103,21 +109,27 @@ function ChildForm({
             ))}
           </select>
         </Field>
-        <Field label="Diagnóstico">
-          <select
-            className={inputClass}
-            value={diagnosis}
-            onChange={(e) => setDiagnosis(Number(e.target.value))}
-          >
-            <option value={0} disabled={!!child?.diagnosesIdDiagnoses}>
-              Não informado
-            </option>
+        <Field label="Diagnósticos (selecione todos os aplicáveis)">
+          <div className="grid gap-2 sm:grid-cols-2">
             {diagnoses.map((d) => (
-              <option key={d.idDiagnoses} value={d.idDiagnoses}>
+              <label key={d.idDiagnoses} className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={diagnosesSelected.includes(d.idDiagnoses)}
+                  onChange={(e) => setDiagnosesSelected((current) => e.target.checked
+                    ? [...current, d.idDiagnoses]
+                    : current.filter((id) => id !== d.idDiagnoses))}
+                />
                 {d.nameDiagnosis}
-              </option>
+              </label>
             ))}
-          </select>
+          </div>
+        </Field>
+        <Field label="Escola">
+          <input maxLength={200} className={inputClass} value={school} onChange={(e) => setSchool(e.target.value)} />
+        </Field>
+        <Field label="CID (opcional)">
+          <input maxLength={30} className={inputClass} value={cid} onChange={(e) => setCid(e.target.value)} />
         </Field>
         <div className="elara-form-footer">
           <Feedback error={error} />
@@ -148,7 +160,9 @@ function ClinicalForm({
     clinical?.observations ?? "",
   );
   const [therapy, setTherapy] = useState(clinical?.therapyIdTherapy ?? 0);
-  const [allergy, setAllergy] = useState(clinical?.allergiesIdAllergies ?? 0);
+  const [allergiesSelected, setAllergiesSelected] = useState<number[]>(
+    clinical?.allergiesIds ?? (clinical?.allergiesIdAllergies ? [clinical.allergiesIdAllergies] : []),
+  );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -168,7 +182,7 @@ function ClinicalForm({
           familyHistory: family.trim(),
           observations: observations.trim(),
           ...(therapy ? { therapyIdTherapy: therapy } : {}),
-          ...(allergy ? { allergiesIdAllergies: allergy } : {}),
+          allergiesIds: allergiesSelected,
         },
       );
       setSuccess("Prontuário salvo.");
@@ -223,21 +237,21 @@ function ClinicalForm({
             ))}
           </select>
         </Field>
-        <Field label="Alergia">
-          <select
-            className={inputClass}
-            value={allergy}
-            onChange={(e) => setAllergy(Number(e.target.value))}
-          >
-            <option value={0} disabled={!!clinical?.allergiesIdAllergies}>
-              Não informada
-            </option>
+        <Field label="Alergias (selecione todas as aplicáveis)">
+          <div className="grid gap-2 sm:grid-cols-2">
             {allergies.data?.map((a) => (
-              <option key={a.idAllergies} value={a.idAllergies}>
+              <label key={a.idAllergies} className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={allergiesSelected.includes(a.idAllergies)}
+                  onChange={(e) => setAllergiesSelected((current) => e.target.checked
+                    ? [...current, a.idAllergies]
+                    : current.filter((id) => id !== a.idAllergies))}
+                />
                 {a.allergenName}
-              </option>
+              </label>
             ))}
-          </select>
+          </div>
         </Field>
         <div className="elara-form-footer">
           <Feedback error={error} success={success} />
@@ -335,12 +349,8 @@ export default function ChildrenPage() {
               Nascimento:{" "}
               {r.child.dob.slice(0, 10).split("-").reverse().join("/")}
             </p>
-            <p>
-              Diagnóstico:{" "}
-              {diagnoses.data?.find(
-                (d) => d.idDiagnoses === r.child?.diagnosesIdDiagnoses,
-              )?.nameDiagnosis ?? "Não informado"}
-            </p>
+            <p>Diagnósticos: {(r.child.diagnosesIds ?? (r.child.diagnosesIdDiagnoses ? [r.child.diagnosesIdDiagnoses] : [])).map((id) => diagnoses.data?.find((d) => d.idDiagnoses === id)?.nameDiagnosis).filter(Boolean).join(", ") || "Não informado"}</p>
+            <p>Escola: {r.child.school || "Não informada"} · CID: {r.child.cid || "Não informado"}</p>
           </Card>
           <Feedback
             busy={clinical.loading}
@@ -361,13 +371,6 @@ export default function ChildrenPage() {
           )}
         </>
       )}
-      <Card>
-        <p className="text-sm">
-          Escola e CID ainda aguardam campos próprios no servidor. O responsável
-          é identificado pela conta conectada. O prontuário atual aceita uma
-          terapia e uma alergia por criança.
-        </p>
-      </Card>
     </Shell>
   );
 }

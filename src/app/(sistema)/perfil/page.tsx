@@ -13,6 +13,8 @@ import {
 function ProfileForm({ user }: { user: User }) {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
+  const [cpf, setCpf] = useState(user.cpf ?? "");
+  const [phone, setPhone] = useState(user.phone ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -26,11 +28,15 @@ function ProfileForm({ user }: { user: User }) {
       const result = await send<User>(`/users/${user.idUser}`, "PATCH", {
         name: name.trim(),
         email: email.trim().toLowerCase(),
+        cpf: cpf.trim(),
+        phone: phone.trim(),
       });
       saveUser(result);
       setSuccess("Perfil atualizado.");
       setName(result.name);
       setEmail(result.email);
+      setCpf(result.cpf ?? "");
+      setPhone(result.phone ?? "");
     } catch (err) {
       setError(errorMessage(err));
     } finally {
@@ -60,14 +66,46 @@ function ProfileForm({ user }: { user: User }) {
             onChange={(e) => setEmail(e.target.value)}
           />
         </Field>
+        <Field label="CPF">
+          <input
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={14}
+            placeholder="000.000.000-00"
+            className={inputClass}
+            value={cpf}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
+              const formatted = digits
+                .replace(/^(\d{3})(\d)/, "$1.$2")
+                .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+                .replace(/\.(\d{3})(\d)/, ".$1-$2");
+              setCpf(formatted);
+            }}
+          />
+        </Field>
+        <Field label="Telefone">
+          <input
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            maxLength={20}
+            placeholder="(00) 00000-0000"
+            className={inputClass}
+            value={phone}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
+              const formatted = digits.length <= 10
+                ? digits.replace(/^(\d{2})(\d)/, "($1) $2").replace(/(\d{4})(\d)/, "$1-$2")
+                : digits.replace(/^(\d{2})(\d)/, "($1) $2").replace(/(\d{5})(\d)/, "$1-$2");
+              setPhone(formatted);
+            }}
+          />
+        </Field>
         <Feedback error={error} success={success} />
         <Button type="submit" disabled={busy}>
           {busy ? "Salvando…" : "Salvar perfil"}
         </Button>
-        <p className="text-sm text-[var(--elara-texto-secundario)]">
-          CPF e telefone aguardam suporte no servidor. O parentesco é informado
-          no cadastro da criança.
-        </p>
       </form>
     </Card>
   );

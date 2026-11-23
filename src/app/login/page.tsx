@@ -1,6 +1,6 @@
 "use client";
 
-import { api, saveUser, User } from "@/lib/api";
+import { ApiError, api, saveUser, User } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/components/Icon";
@@ -42,13 +42,26 @@ export default function LoginPage() {
     setCarregando(true);
 
     try {
-      const dados = await api<{ accessToken: string; user: User }>(
-        "/auth/login",
-        {
+      const login = () =>
+        api<{ accessToken: string; user: User }>("/auth/login", {
           method: "POST",
           body: JSON.stringify({ email: emailLimpo, senha }),
-        },
-      );
+        });
+      let dados: { accessToken: string; user: User };
+      try {
+        dados = await login();
+      } catch (firstError) {
+        // Instâncias gratuitas podem estar iniciando após um período sem uso.
+        // Refaz apenas falhas transitórias; credenciais inválidas não são repetidas.
+        if (
+          !(firstError instanceof ApiError) ||
+          ![0, 502, 503, 504].includes(firstError.status)
+        ) {
+          throw firstError;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1200));
+        dados = await login();
+      }
 
       if (!dados.accessToken || !dados.user?.idUser) {
         throw new Error("Resposta de login inválida.");

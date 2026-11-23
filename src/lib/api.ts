@@ -6,6 +6,8 @@ export type User = {
   name: string;
   email: string;
   role: "user" | "admin";
+  cpf?: string | null;
+  phone?: string | null;
 };
 export type Child = {
   idChildren: number;
@@ -13,6 +15,9 @@ export type Child = {
   dob: string;
   relationshipIdRelationship: number;
   diagnosesIdDiagnoses: number | null;
+  diagnosesIds?: number[];
+  school?: string | null;
+  cid?: string | null;
   clinicalDataIdClinicalData: number | null;
 };
 export type Clinical = {
@@ -20,6 +25,7 @@ export type Clinical = {
   observations: string;
   therapyIdTherapy?: number | null;
   allergiesIdAllergies?: number | null;
+  allergiesIds?: number[];
 };
 export type Appointment = {
   idAppointments: number;
