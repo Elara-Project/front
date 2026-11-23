@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 import Sidebar from "@/components/Sidebar";
 import Icon from "@/components/Icon";
@@ -26,31 +26,43 @@ export default function PaginaIA() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [failedQuestion, setFailedQuestion] = useState("");
+  const [pendingQuestion, setPendingQuestion] = useState("");
+  const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const chats = [...(history.data ?? []), ...recent]
     .filter((c, i, all) => all.findIndex((x) => x.idChat === c.idChat) === i)
     .sort(
       (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
     );
-  const mensagens: Mensagem[] = chats.flatMap((chat) => [
-    { id: chat.idChat * 2, autor: "usuario" as const, texto: chat.questions },
-    {
-      id: chat.idChat * 2 + 1,
-      autor: "assistente" as const,
-      texto: chat.answer,
-    },
-  ]);
+  const mensagens: Mensagem[] = [
+    ...chats.flatMap((chat) => [
+      { id: chat.idChat * 2, autor: "usuario" as const, texto: chat.questions },
+      {
+        id: chat.idChat * 2 + 1,
+        autor: "assistente" as const,
+        texto: chat.answer,
+      },
+    ]),
+    ...(pendingQuestion
+      ? [{ id: Number.MAX_SAFE_INTEGER, autor: "usuario" as const, texto: pendingQuestion }]
+      : []),
+  ];
+  useEffect(() => {
+    endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [mensagens.length, busy]);
   async function enviar(conteudo: string) {
     const pergunta = conteudo.trim();
     if (!pergunta || busy) return;
     setBusy(true);
     setError("");
     setFailedQuestion("");
+    setPendingQuestion(pergunta);
     try {
       const chat = await send<Chat>("/ai-assistant/ask", "POST", {
         question: pergunta,
       });
       setRecent((items) => [...items, chat]);
       setTexto("");
+      setPendingQuestion("");
     } catch (err) {
       setError(errorMessage(err));
       setFailedQuestion(pergunta);
@@ -174,6 +186,13 @@ export default function PaginaIA() {
                     <p>{mensagem.texto}</p>
                   </div>
                 ))}
+                {busy && (
+                  <div className="mensagem assistente" role="status">
+                    <span className="autor">ELARA</span>
+                    <p>Estou pensando na melhor forma de te ajudar…</p>
+                  </div>
+                )}
+                <div ref={endOfMessagesRef} />
               </div>
 
               <form onSubmit={enviarFormulario} className="formulario">
