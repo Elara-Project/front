@@ -138,7 +138,10 @@ async function response(path: string, init: RequestInit = {}) {
   const jwt = token();
   if (jwt) headers.set("Authorization", `Bearer ${jwt}`);
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
+  // No Render gratuito, a primeira resposta de IA pode demorar mais enquanto
+  // o serviço acorda e o modelo gera a resposta. Não cancelar a pergunta em 30s.
+  const timeoutMs = path === "/ai-assistant/ask" ? 90000 : 30000;
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   let res: Response;
   try {
     res = await fetch(`${API_URL}${path}`, {

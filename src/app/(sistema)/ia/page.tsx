@@ -25,6 +25,7 @@ export default function PaginaIA() {
   const [texto, setTexto] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [failedQuestion, setFailedQuestion] = useState("");
   const chats = [...(history.data ?? []), ...recent]
     .filter((c, i, all) => all.findIndex((x) => x.idChat === c.idChat) === i)
     .sort(
@@ -40,9 +41,10 @@ export default function PaginaIA() {
   ]);
   async function enviar(conteudo: string) {
     const pergunta = conteudo.trim();
-    if (!pergunta || busy || history.loading || history.error) return;
+    if (!pergunta || busy) return;
     setBusy(true);
     setError("");
+    setFailedQuestion("");
     try {
       const chat = await send<Chat>("/ai-assistant/ask", "POST", {
         question: pergunta,
@@ -51,6 +53,7 @@ export default function PaginaIA() {
       setTexto("");
     } catch (err) {
       setError(errorMessage(err));
+      setFailedQuestion(pergunta);
     } finally {
       setBusy(false);
     }
@@ -63,6 +66,11 @@ export default function PaginaIA() {
 
   function novaConversa() {
     setTexto("");
+  }
+
+  function tentarNovamente() {
+    if (failedQuestion) void enviar(failedQuestion);
+    else history.reload();
   }
 
   return (
@@ -94,7 +102,7 @@ export default function PaginaIA() {
           <Feedback
             busy={history.loading || busy}
             error={error || history.error}
-            retry={history.reload}
+            retry={tentarNovamente}
           />
           <div className="estrutura">
             <aside className="painel">
@@ -113,7 +121,7 @@ export default function PaginaIA() {
                   <button
                     type="button"
                     key={sugestao}
-                    disabled={busy || history.loading || !!history.error}
+                    disabled={busy}
                     onClick={() => enviar(sugestao)}
                   >
                     {sugestao}
@@ -187,10 +195,7 @@ export default function PaginaIA() {
                   <button
                     type="submit"
                     disabled={
-                      busy ||
-                      history.loading ||
-                      !!history.error ||
-                      !texto.trim()
+                      busy || !texto.trim()
                     }
                   >
                     Enviar <span aria-hidden="true">↑</span>
