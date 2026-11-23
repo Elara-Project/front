@@ -159,7 +159,9 @@ function ClinicalForm({
   const [observations, setObservations] = useState(
     clinical?.observations ?? "",
   );
-  const [therapy, setTherapy] = useState(clinical?.therapyIdTherapy ?? 0);
+  const [therapiesSelected, setTherapiesSelected] = useState<number[]>(
+    clinical?.therapyIds ?? (clinical?.therapyIdTherapy ? [clinical.therapyIdTherapy] : []),
+  );
   const [allergiesSelected, setAllergiesSelected] = useState<number[]>(
     clinical?.allergiesIds ?? (clinical?.allergiesIdAllergies ? [clinical.allergiesIdAllergies] : []),
   );
@@ -181,7 +183,7 @@ function ClinicalForm({
         {
           familyHistory: family.trim(),
           observations: observations.trim(),
-          ...(therapy ? { therapyIdTherapy: therapy } : {}),
+          therapyIds: therapiesSelected,
           allergiesIds: allergiesSelected,
         },
       );
@@ -221,21 +223,24 @@ function ClinicalForm({
             onChange={(e) => setObservations(e.target.value)}
           />
         </Field>
-        <Field label="Terapia">
-          <select
-            className={inputClass}
-            value={therapy}
-            onChange={(e) => setTherapy(Number(e.target.value))}
-          >
-            <option value={0} disabled={!!clinical?.therapyIdTherapy}>
-              Não informada
-            </option>
+        <Field label="Terapias (selecione todas as aplicáveis)">
+          <div className="grid gap-2 sm:grid-cols-2">
             {therapies.data?.map((t) => (
-              <option key={t.idTherapy} value={t.idTherapy}>
+              <label key={t.idTherapy} className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={therapiesSelected.includes(t.idTherapy)}
+                  onChange={(e) => setTherapiesSelected((current) => e.target.checked
+                    ? [...current, t.idTherapy]
+                    : current.filter((id) => id !== t.idTherapy))}
+                />
                 {t.nameTherapy}
-              </option>
+              </label>
             ))}
-          </select>
+            {!therapies.loading && !therapies.error && !therapies.data?.length && (
+              <span className="text-sm text-[var(--elara-muted)]">Nenhuma terapia cadastrada.</span>
+            )}
+          </div>
         </Field>
         <Field label="Alergias (selecione todas as aplicáveis)">
           <div className="grid gap-2 sm:grid-cols-2">

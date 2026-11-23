@@ -24,6 +24,7 @@ export type Clinical = {
   familyHistory: string;
   observations: string;
   therapyIdTherapy?: number | null;
+  therapyIds?: number[];
   allergiesIdAllergies?: number | null;
   allergiesIds?: number[];
 };
